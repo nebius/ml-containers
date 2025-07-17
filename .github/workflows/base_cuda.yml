@@ -1,4 +1,4 @@
-name: Base build for active checks images
+name: Base build for cuda images
 
 on:
   workflow_call:
@@ -31,6 +31,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          file: ${{ inputs.dockerfile_path }}
           platforms: linux/amd64,linux/arm64
-          push: false
+          push: true
           tags: cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}
