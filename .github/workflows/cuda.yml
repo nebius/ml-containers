@@ -1,0 +1,11 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  cuda_12_9_0:
+    uses: ./.github/workflows/base_cuda.yml
+    with:
+      dockerfile_path: "./cuda/cuda.12.9.0.dockerfile"
+      cuda_version: "12.9.0"
+      ubuntu_version: "ubuntu22.04"
+      nccl_version: "2.26.5-1"

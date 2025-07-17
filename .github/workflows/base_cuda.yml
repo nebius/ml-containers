@@ -1,0 +1,36 @@
+name: Base build for active checks images
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile_path:
+        required: true
+        type: string
+      cuda_version:
+        required: true
+        type: string
+      ubuntu_version:
+        required: true
+        type: string
+      nccl_version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: [self-hosted, X64]
+    name: Building image for ${{ inputs.cuda_version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set short SHA
+        run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}
