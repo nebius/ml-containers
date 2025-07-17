@@ -46,7 +46,9 @@ EOF
 
   echo "Install mock packages"
   dpkg -i ./*.deb
-popd || true
+if ! popd; then
+  echo "Warning: popd failed, but continuing execution."
+fi
 
 # Cleanup
 rm -rf /tmp/driver_mocks
