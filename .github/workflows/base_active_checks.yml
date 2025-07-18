@@ -1,4 +1,4 @@
-name: Base build for cuda images
+name: Base build for active checks images
 
 on:
   workflow_call:
@@ -12,9 +12,10 @@ on:
       ubuntu_version:
         required: true
         type: string
-      nccl_version:
+      nccl_tests_version:
         required: true
         type: string
+
 
 jobs:
   build:
@@ -33,4 +34,7 @@ jobs:
           file: ${{ inputs.dockerfile_path }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}
+          tags: cr.eu-north1.nebius.cloud/soperator/active_checks:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_test_version }}-${{ env.SHORT_SHA }}
+          build-args: |-
+            CUDA_VERSION=${{ inputs.cuda_version }}
+            NCCL_TESTS_VERSION=${{ inputs.nccl_tests_version }}
