@@ -1,4 +1,4 @@
-name: Build cuda images
+name: Build active checks images
 
 on:
   workflow_dispatch:
