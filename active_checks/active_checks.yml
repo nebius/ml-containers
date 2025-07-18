@@ -1,0 +1,13 @@
+name: Build cuda images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  active_checks:
+    uses: ./.github/workflows/base_active_checks.yml
+    with:
+      dockerfile_path: "./active_checks/active_checks.dockerfile"
+      cuda_version: "12.9.0"
+      ubuntu_version: "ubuntu24.04"
+      nccl_tests_version: "nccl_tests2.16.4"
