@@ -1,4 +1,4 @@
-FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5-1-1ba1d76
+FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5-1-295cb71
 
 # Download NCCL tests executables
 ARG CUDA_VERSION
