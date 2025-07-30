@@ -5,6 +5,11 @@ ARG CUDA_VERSION
 ARG NCCL_TESTS_VERSION
 ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
 
+RUN apt-get update &&  \
+    apt install -y rdma-core ibverbs-utils && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN ARCH=$(uname -m) && \
     case "$ARCH" in \
       x86_64) ARCH_DEB=x64 ;; \
