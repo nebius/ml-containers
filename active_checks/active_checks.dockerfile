@@ -19,4 +19,7 @@ RUN ARCH=$(uname -m) && \
     echo "Using architecture: $ARCH_DEB" && \
     wget -P /tmp "${PACKAGES_REPO_URL}/nccl_tests_${CUDA_VERSION}_ubuntu24.04/nccl-tests-perf-${ARCH_DEB}.tar.gz" && \
     tar -xvzf /tmp/nccl-tests-perf-${ARCH_DEB}.tar.gz -C /usr/bin && \
-    rm -rf /tmp/nccl-tests-perf-${ARCH_DEB}.tar.gz
+    rm -rf /tmp/nccl-tests-perf-${ARCH_DEB}.tar.gz && \
+    wget -P /tmp "${PACKAGES_REPO_URL}/cuda_samples_${CUDA_VERSION}_ubuntu24.04/cuda-samples-${ARCH_DEB}.tar.gz" && \
+    tar -xvzf /tmp/cuda-samples-${ARCH_DEB}.tar.gz -C /usr/bin --strip-components=1 && \
+    rm -rf /tmp/cuda-samples-${ARCH_DEB}.tar.gz
