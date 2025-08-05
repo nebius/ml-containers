@@ -7,11 +7,16 @@ FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5
 ARG CUDA_VERSION
 ARG NCCL_TESTS_VERSION
 ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
-
+ARG MLC_TOOL_URL="https://downloadmirror.intel.com/834254/mlc_v3.11b.tgz"
 ARG OPENMPI_VERSION=4.1.7a1-1.2404066
 ARG OPENMPI_VERSION_SHORT=4.1.7a1
 ARG OFED_VERSION=24.04-0.7.0.0
 ARG UCX_VERSION=1.17.0-1.2404066
+
+RUN apt-get update && \
+    apt install -y rdma-core ibverbs-utils wget tar && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install OpenMPI, UCX, and related config
 RUN DISTRO="$(. /etc/os-release && echo "${ID}${VERSION_ID}")"; \
@@ -30,10 +35,13 @@ RUN DISTRO="$(. /etc/os-release && echo "${ID}${VERSION_ID}")"; \
     printf "/lib/${ALT_ARCH}-linux-gnu\n/usr/lib/${ALT_ARCH}-linux-gnu\n/usr/local/cuda/targets/${ALT_ARCH}-linux/lib\n/usr/mpi/gcc/openmpi-${OPENMPI_VERSION_SHORT}/lib\n" > /etc/ld.so.conf.d/openmpi.conf; \
     ldconfig
 
-RUN apt-get update &&  \
-    apt install -y rdma-core ibverbs-utils && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install Intel MLC binary
+RUN mkdir -p /tmp/mlc && \
+    wget "$MLC_TOOL_URL" -O /tmp/mlc/mlc.tgz && \
+    tar -xzf /tmp/mlc/mlc.tgz -C /tmp/mlc && \
+    chmod +x /tmp/mlc/Linux/mlc && \
+    cp /tmp/mlc/Linux/mlc /usr/local/bin/mlc && \
+    rm -rf /tmp/mlc
 
 # Download NCCL tests executables
 RUN ARCH=$(uname -m) && \
