@@ -1,3 +1,7 @@
+FROM ghcr.io/huggingface/gpu-fryer:1.1.0 AS fryer
+
+################################################
+
 FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5-1-295cb71
 
 ARG CUDA_VERSION
@@ -45,3 +49,5 @@ RUN ARCH=$(uname -m) && \
     wget -P /tmp "${PACKAGES_REPO_URL}/cuda_samples_${CUDA_VERSION}_ubuntu24.04/cuda-samples-${ARCH_DEB}.tar.gz" && \
     tar -xvzf /tmp/cuda-samples-${ARCH_DEB}.tar.gz -C /usr/bin --strip-components=1 && \
     rm -rf /tmp/cuda-samples-${ARCH_DEB}.tar.gz
+
+COPY --from=fryer /usr/local/bin/gpu-fryer /usr/bin/gpu-fryer
