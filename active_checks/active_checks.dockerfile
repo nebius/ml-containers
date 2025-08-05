@@ -4,12 +4,22 @@ FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5
 ARG CUDA_VERSION
 ARG NCCL_TESTS_VERSION
 ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
+ARG MLC_TOOL_URL="https://downloadmirror.intel.com/834254/mlc_v3.11b.tgz"
 
-RUN apt-get update &&  \
-    apt install -y rdma-core ibverbs-utils && \
+RUN apt-get update && \
+    apt install -y rdma-core ibverbs-utils wget tar && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Intel MLC binary
+RUN mkdir -p /tmp/mlc && \
+    wget "$MLC_TOOL_URL" -O /tmp/mlc/mlc.tgz && \
+    tar -xzf /tmp/mlc/mlc.tgz -C /tmp/mlc && \
+    chmod +x /tmp/mlc/Linux/mlc && \
+    cp /tmp/mlc/Linux/mlc /usr/local/bin/mlc && \
+    rm -rf /tmp/mlc
+
+# Download and install NCCL tests
 RUN ARCH=$(uname -m) && \
     case "$ARCH" in \
       x86_64) ARCH_DEB=x64 ;; \
