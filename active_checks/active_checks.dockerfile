@@ -14,7 +14,20 @@ ARG OFED_VERSION=24.04-0.7.0.0
 ARG UCX_VERSION=1.17.0-1.2404066
 
 RUN apt-get update && \
-    apt install -y rdma-core ibverbs-utils wget tar && \
+    apt install -y --no-install-recommends \
+        rdma-core \
+        ibverbs-utils \
+        wget \
+        tar \
+        git \
+        build-essential \
+        libibverbs-dev \
+        libibumad-dev \
+        librdmacm-dev \
+        libpci-dev \
+        libmlx5-1 \
+        autoconf \
+        libtool && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -57,5 +70,19 @@ RUN ARCH=$(uname -m) && \
     wget -P /tmp "${PACKAGES_REPO_URL}/cuda_samples_${CUDA_VERSION}_ubuntu24.04/cuda-samples-${ARCH_DEB}.tar.gz" && \
     tar -xvzf /tmp/cuda-samples-${ARCH_DEB}.tar.gz -C /usr/bin --strip-components=1 && \
     rm -rf /tmp/cuda-samples-${ARCH_DEB}.tar.gz
+
+# Install perftest from source
+RUN echo "Cloning perftest..." && \
+    git clone https://github.com/linux-rdma/perftest.git /tmp/perftest && \
+    cd /tmp/perftest && \
+    echo "Building perftest..." && \
+    ./autogen.sh && \
+    ./configure && \
+    make && \
+    echo "Installing perftest..." && \
+    make install && \
+    echo "Cleaning up perftest..." && \
+    cd / && \
+    rm -rf /tmp/perftest
 
 COPY --from=fryer /usr/local/bin/gpu-fryer /usr/bin/gpu-fryer
