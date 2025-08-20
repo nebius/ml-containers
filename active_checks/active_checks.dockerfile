@@ -24,7 +24,7 @@ RUN echo "Cloning perftest..." && \
     cd /tmp/perftest && \
     echo "Building perftest..." && \
     ./autogen.sh && \
-    ./configure --enable-cudart && \
+    ./configure && \
     make && \
     echo "Installing perftest..." && \
     make install && \
