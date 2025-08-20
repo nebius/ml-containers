@@ -14,8 +14,10 @@ ARG OFED_VERSION=24.04-0.7.0.0
 ARG UCX_VERSION=1.17.0-1.2404066
 
 RUN apt-get update && \
-    apt install -y rdma-core ibverbs-utils wget tar && \
-    apt clean && \
+    apt-get install -y --no-install-recommends \
+      rdma-core ibverbs-utils wget tar \
+      libibverbs1 librdmacm1 libmlx5-1 libpci3 && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install OpenMPI, UCX, and related config
