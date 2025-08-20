@@ -2,38 +2,6 @@ FROM ghcr.io/huggingface/gpu-fryer:1.1.0 AS fryer
 
 ################################################
 
-FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5-1-295cb71 AS perftest
-
-RUN apt-get update && \
-    apt install -y --no-install-recommends \
-        git \
-        build-essential \
-        libibverbs-dev \
-        libibumad-dev \
-        librdmacm-dev \
-        libpci-dev \
-        libmlx5-1 \
-        autoconf \
-        libtool && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install perftest from source
-RUN echo "Cloning perftest..." && \
-    git clone https://github.com/linux-rdma/perftest.git /tmp/perftest && \
-    cd /tmp/perftest && \
-    echo "Building perftest..." && \
-    ./autogen.sh && \
-    ./configure && \
-    make && \
-    echo "Installing perftest..." && \
-    make install && \
-    echo "Cleaning up perftest..." && \
-    cd / && \
-    rm -rf /tmp/perftest
-
-################################################
-
 FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5-1-295cb71
 
 ARG CUDA_VERSION
@@ -75,7 +43,7 @@ RUN mkdir -p /tmp/mlc && \
     cp /tmp/mlc/Linux/mlc /usr/local/bin/mlc && \
     rm -rf /tmp/mlc
 
-# Download NCCL tests executables
+# Download NCCL tests, CUDA samples, and perftest executables
 RUN ARCH=$(uname -m) && \
     case "$ARCH" in \
       x86_64) ARCH_DEB=x64 ;; \
@@ -83,14 +51,18 @@ RUN ARCH=$(uname -m) && \
       *) echo "Unsupported architecture: $ARCH" && exit 1 ;; \
     esac && \
     echo "Using architecture: $ARCH_DEB" && \
+    # NCCL tests
     wget -P /tmp "${PACKAGES_REPO_URL}/nccl_tests_${CUDA_VERSION}_ubuntu24.04/nccl-tests-perf-${ARCH_DEB}.tar.gz" && \
     tar -xvzf /tmp/nccl-tests-perf-${ARCH_DEB}.tar.gz -C /usr/bin && \
     rm -rf /tmp/nccl-tests-perf-${ARCH_DEB}.tar.gz && \
+    # CUDA samples
     wget -P /tmp "${PACKAGES_REPO_URL}/cuda_samples_${CUDA_VERSION}_ubuntu24.04/cuda-samples-${ARCH_DEB}.tar.gz" && \
     tar -xvzf /tmp/cuda-samples-${ARCH_DEB}.tar.gz -C /usr/bin --strip-components=1 && \
-    rm -rf /tmp/cuda-samples-${ARCH_DEB}.tar.gz
+    rm -rf /tmp/cuda-samples-${ARCH_DEB}.tar.gz && \
+    # perftest
+    wget -P /tmp "${PACKAGES_REPO_URL}/perftest_${CUDA_VERSION}_ubuntu24.04/perftest-${ARCH_DEB}.tar.gz" && \
+    tar -xvzf /tmp/perftest-${ARCH_DEB}.tar.gz -C /usr/bin && \
+    chmod +x /usr/bin/ib_write_bw /usr/bin/ib_write_lat && \
+    rm -rf /tmp/perftest-${ARCH_DEB}.tar.gz
 
 COPY --from=fryer /usr/local/bin/gpu-fryer /usr/bin/gpu-fryer
-
-COPY --from=perftest /usr/bin/ib_write_bw /usr/bin/ib_write_bw
-COPY --from=perftest /usr/bin/ib_write_lat /usr/bin/ib_write_lat
