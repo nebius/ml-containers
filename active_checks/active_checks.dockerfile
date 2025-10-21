@@ -7,7 +7,7 @@ FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:12.9.0-ubuntu24.04-nccl2.26.5
 ARG CUDA_VERSION
 ARG NCCL_TESTS_VERSION
 ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
-ARG MLC_TOOL_URL="https://downloadmirror.intel.com/834254/mlc_v3.11b.tgz"
+ARG MLC_TOOL_URL="https://downloadmirror.intel.com/866182/mlc_v3.12.tgz"
 ARG OPENMPI_VERSION=4.1.7a1-1.2404066
 ARG OPENMPI_VERSION_SHORT=4.1.7a1
 ARG OFED_VERSION=24.04-0.7.0.0
