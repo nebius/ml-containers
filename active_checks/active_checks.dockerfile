@@ -64,7 +64,7 @@ RUN ARCH=$(uname -m) && \
     # perftest
     wget -P /tmp "${PACKAGES_REPO_URL}/perftest_${CUDA_VERSION}_ubuntu24.04/perftest-${ARCH_DEB}.tar.gz" && \
     tar -xvzf /tmp/perftest-${ARCH_DEB}.tar.gz -C /usr/bin && \
-    chmod +x /usr/bin/ib_write_bw /usr/bin/ib_write_lat && \
+    chmod +x /usr/bin/ib_* && \
     rm -rf /tmp/perftest-${ARCH_DEB}.tar.gz
 
 COPY --from=fryer /usr/local/bin/gpu-fryer /usr/bin/gpu-fryer
