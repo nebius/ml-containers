@@ -15,7 +15,7 @@ ARG UCX_VERSION=1.17.0-1.2404066
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      rdma-core ibverbs-utils wget tar numactl \
+      rdma-core ibverbs-utils wget tar \
       libibverbs1 librdmacm1 libmlx5-1 libpci3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -66,6 +66,13 @@ RUN ARCH=$(uname -m) && \
     tar -xvzf /tmp/perftest-${ARCH_DEB}.tar.gz -C /usr/bin && \
     chmod +x /usr/bin/ib_* && \
     rm -rf /tmp/perftest-${ARCH_DEB}.tar.gz
+
+# Install numactl
+RUN apt update && \
+    apt install -y \
+        numactl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install dcgmi tools
 # https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
