@@ -48,25 +48,20 @@ RUN mkdir -p /tmp/mlc && \
 
 # Download NCCL tests, CUDA samples, and perftest executables
 RUN ARCH=$(uname -m) && \
-    case "$ARCH" in \
-      x86_64) ARCH_DEB=x64 ;; \
-      aarch64) ARCH_DEB=arm64 ;; \
-      *) echo "Unsupported architecture: $ARCH" && exit 1 ;; \
-    esac && \
-    echo "Using architecture: $ARCH_DEB" && \
+    echo "Using architecture: $ARCH" && \
     # NCCL tests
-    wget -P /tmp "${PACKAGES_REPO_URL}/nccl_tests_${CUDA_VERSION}_ubuntu24.04/nccl-tests-perf-${ARCH_DEB}.tar.gz" && \
-    tar -xvzf /tmp/nccl-tests-perf-${ARCH_DEB}.tar.gz -C /usr/bin && \
-    rm -rf /tmp/nccl-tests-perf-${ARCH_DEB}.tar.gz && \
+    wget -P /tmp "${PACKAGES_REPO_URL}/nccl_tests_${CUDA_VERSION}_ubuntu24.04/nccl-tests-perf-${ARCH}.tar.gz" && \
+    tar -xvzf /tmp/nccl-tests-perf-${ARCH}.tar.gz -C /usr/bin && \
+    rm -rf /tmp/nccl-tests-perf-${ARCH}.tar.gz && \
     # CUDA samples
-    wget -P /tmp "${PACKAGES_REPO_URL}/cuda_samples_${CUDA_VERSION}_ubuntu24.04/cuda-samples-${ARCH_DEB}.tar.gz" && \
-    tar -xvzf /tmp/cuda-samples-${ARCH_DEB}.tar.gz -C /usr/bin --strip-components=1 && \
-    rm -rf /tmp/cuda-samples-${ARCH_DEB}.tar.gz && \
+    wget -P /tmp "${PACKAGES_REPO_URL}/cuda_samples_${CUDA_VERSION}_ubuntu24.04/cuda-samples-${ARCH}.tar.gz" && \
+    tar -xvzf /tmp/cuda-samples-${ARCH}.tar.gz -C /usr/bin --strip-components=1 && \
+    rm -rf /tmp/cuda-samples-${ARCH}.tar.gz && \
     # perftest
-    wget -P /tmp "${PACKAGES_REPO_URL}/perftest_${CUDA_VERSION}_ubuntu24.04/perftest-${ARCH_DEB}.tar.gz" && \
-    tar -xvzf /tmp/perftest-${ARCH_DEB}.tar.gz -C /usr/bin && \
+    wget -P /tmp "${PACKAGES_REPO_URL}/perftest_${CUDA_VERSION}_ubuntu24.04/perftest-${ARCH}.tar.gz" && \
+    tar -xvzf /tmp/perftest-${ARCH}.tar.gz -C /usr/bin && \
     chmod +x /usr/bin/ib_* && \
-    rm -rf /tmp/perftest-${ARCH_DEB}.tar.gz
+    rm -rf /tmp/perftest-${ARCH}.tar.gz
 
 # Install numactl
 RUN apt update && \
