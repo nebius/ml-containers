@@ -1,4 +1,26 @@
-FROM ghcr.io/huggingface/gpu-fryer:1.1.0 AS fryer
+FROM cr.eu-north1.nebius.cloud/soperator/cuda_base:13.0.2-ubuntu24.04-nccl2.28.7-1-14542c2 AS fryer
+
+ENV REPO_URL="https://github.com/huggingface/gpu-fryer"
+ENV TAG="v1.1.0"
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git \
+        libssl-dev \
+        pkg-config \
+        build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN git clone --depth 1 --branch "${TAG}" "${REPO_URL}" /gpu-fryer
+
+WORKDIR /gpu-fryer
+
+RUN cargo build --release
 
 ################################################
 
@@ -77,4 +99,4 @@ RUN apt-get update && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=fryer /usr/local/bin/gpu-fryer /usr/bin/gpu-fryer
+COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer
