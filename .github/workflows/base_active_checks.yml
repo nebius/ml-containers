@@ -31,7 +31,7 @@ jobs:
     name: Building image from ${{ inputs.dockerfile }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Add docker-credential-nebius to PATH
         run: echo "/home/ml_containers/.nebius/bin" >> $GITHUB_PATH
