@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 ENV LANG=en_US.UTF-8
 ENV LIBNCCL_VERSION=2.28.7-1
-
+ENV DCGMI_VERSION=1:4.4.2-1
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
@@ -65,6 +65,13 @@ RUN chmod +x /opt/bin/install_driver_mocks.sh && \
     /opt/bin/install_driver_mocks.sh && \
     rm /opt/bin/install_driver_mocks.sh
 
+# Install dcgmi (DCGM for CUDA 13)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        datacenter-gpu-manager-4-cuda13=${DCGMI_VERSION} && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # About CUDA packages https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#meta-packages
 RUN apt update && \
     apt install -y \
@@ -86,7 +93,8 @@ RUN apt-mark hold \
     libcudnn9-dev-cuda-13=9.15.0.58-1 \
     libcudnn9-headers-cuda-13=9.15.0.58-1 \
     libnccl-dev=${LIBNCCL_VERSION}+cuda13.0 \
-    libnccl2=${LIBNCCL_VERSION}+cuda13.0
+    libnccl2=${LIBNCCL_VERSION}+cuda13.0 \
+    datacenter-gpu-manager-4-cuda13
 
 COPY cuda/pin_packages/ /etc/apt/preferences.d/
 RUN apt update

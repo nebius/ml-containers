@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 ENV LANG=en_US.UTF-8
 ENV LIBNCCL_VERSION=2.26.5-1
-
+ENV DCGMI_VERSION=1:4.4.2-1
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
@@ -58,12 +58,18 @@ RUN curl -fsSL https://dr.nebius.cloud/public.gpg -o /usr/share/keyrings/nebius.
     echo "deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ $codename main" > /etc/apt/sources.list.d/nebius.list && \
     echo "deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ stable main" >> /etc/apt/sources.list.d/nebius.list
 
-
 # Install mock packages for NVIDIA drivers
 COPY cuda/scripts/install_driver_mocks.sh /opt/bin/
 RUN chmod +x /opt/bin/install_driver_mocks.sh && \
     /opt/bin/install_driver_mocks.sh && \
     rm /opt/bin/install_driver_mocks.sh
+
+# Install dcgmi
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        datacenter-gpu-manager-4-cuda12=${DCGMI_VERSION} && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # About CUDA packages https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#meta-packages
 RUN apt update && \
@@ -86,7 +92,8 @@ RUN apt-mark hold \
     libcudnn9-dev-cuda-12=9.10.1.4-1 \
     libcudnn9-headers-cuda-12=9.10.1.4-1 \
     libnccl-dev=${LIBNCCL_VERSION}+cuda12.9 \
-    libnccl2=${LIBNCCL_VERSION}+cuda12.9
+    libnccl2=${LIBNCCL_VERSION}+cuda12.9 \
+    datacenter-gpu-manager-4-cuda12
 
 COPY cuda/pin_packages/ /etc/apt/preferences.d/
 RUN apt update
