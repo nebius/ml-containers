@@ -19,15 +19,8 @@ on:
 jobs:
   build_and_push:
     runs-on: self-hosted
-    strategy:
-      matrix:
-        include:
-          - arch: amd64
-            suffix: amd
-          - arch: arm64
-            suffix: arm
 
-    name: Building and push image for ${{ inputs.dockerfile }}
+    name: Building and push image for ${{ inputs.dockerfile_path }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -39,31 +32,10 @@ jobs:
         run: |
           echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
-      - name: Build and push ${{ matrix.arch }} image
+      - name: Build and push images
         run: |
-          docker build \
-            --platform linux/${{ matrix.arch }} \
-            -t cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}-${{ matrix.suffix }} \
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${SHORT_SHA} \
+            --push \
             -f ${{ inputs.dockerfile_path }} .
-          
-          docker push cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}-${{ matrix.suffix }}
-
-  manifest:
-    runs-on: self-hosted
-    needs: build_and_push
-    steps:
-      - name: Add docker-credential-nebius to PATH
-        run: echo "/home/ml_containers/.nebius/bin" >> $GITHUB_PATH
-
-      - name: Set short SHA
-        run: |
-          echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
-
-      - name: Create and Push Manifest for ${{ inputs.dockerfile }}
-        run: |
-          docker manifest create \
-            cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }} \
-            cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}-amd \
-            cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}-arm
-          
-          docker manifest push cr.eu-north1.nebius.cloud/soperator/cuda_base:${{ inputs.cuda_version }}-${{ inputs.ubuntu_version }}-${{ inputs.nccl_version }}-${{ env.SHORT_SHA }}
