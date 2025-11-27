@@ -37,7 +37,7 @@ ARG UCX_VERSION=1.17.0-1.2404066
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      rdma-core ibverbs-utils wget tar \
+      rdma-core ibverbs-utils wget tar sudo \
       libibverbs1 librdmacm1 libmlx5-1 libpci3 \
       libibumad3 ibverbs-providers && \
     apt-get clean && \
