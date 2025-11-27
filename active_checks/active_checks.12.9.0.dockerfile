@@ -1,4 +1,5 @@
-FROM ghcr.io/huggingface/gpu-fryer:1.1.0 AS fryer
+ARG TARGETARCH
+FROM --platform=$TARGETARCH ghcr.io/huggingface/gpu-fryer:1.1.0 AS fryer
 
 ################################################
 
