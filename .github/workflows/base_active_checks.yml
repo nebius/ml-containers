@@ -27,8 +27,6 @@ jobs:
             suffix: amd
           - arch: arm64
             suffix: arm
-    env:
-      DOCKER_BUILDKIT: 0
 
     name: Building image from ${{ inputs.dockerfile }}
     steps:
