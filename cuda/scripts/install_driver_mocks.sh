@@ -24,6 +24,23 @@ driver_packages=(
   libnvidia-compute-570
   libnvidia-compute-575
   libnvidia-compute-580
+  libnvidia-compute-585
+  libnvidia-compute-590
+  libnvidia-compute-595
+  libnvidia-compute-525-server
+  libnvidia-compute-530-server
+  libnvidia-compute-535-server
+  libnvidia-compute-545-server
+  libnvidia-compute-550-server
+  libnvidia-compute-555-server
+  libnvidia-compute-560-server
+  libnvidia-compute-565-server
+  libnvidia-compute-570-server
+  libnvidia-compute-575-server
+  libnvidia-compute-580-server
+  libnvidia-compute-585-server
+  libnvidia-compute-590-server
+  libnvidia-compute-595-server
 )
 
 # Install deb package mocking tool
