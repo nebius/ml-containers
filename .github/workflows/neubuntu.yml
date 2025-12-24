@@ -1,0 +1,31 @@
+name: Nebius ubuntu build (Neubuntu)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_push:
+    runs-on: X64
+
+    name: Building image Nebius ubuntu
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Add docker-credential-nebius to PATH
+        run: echo "/home/ml_containers/.nebius/bin" >> $GITHUB_PATH
+
+      - name: Set daytime
+        run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Get image version name
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }}"
+
+      - name: Build and push image
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }} \
+            --target neubuntu \
+            --push \
+            .

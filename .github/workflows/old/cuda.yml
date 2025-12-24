@@ -1,4 +1,4 @@
-name: Build active checks images
+name: Build cuda images
 
 on:
   workflow_dispatch:
@@ -13,17 +13,17 @@ on:
         required: true
         default: "ubuntu24.04"
         type: string
-      nccl_test_version:
-        description: "NCCL tests version"
+      nccl_version:
+        description: "NCCL lib version"
         required: true
-        default: "nccl_tests2.16.4"
+        default: "nccl2.26.5-1"
         type: string
 
 jobs:
-  active_checks:
-    uses: ./.github/workflows/base_active_checks.yml
+  cuda:
+    uses: ./.github/workflows/old/base_cuda.yml
     with:
-      dockerfile_path: "./active_checks/active_checks.${{ github.event.inputs.cuda_version }}.dockerfile"
+      dockerfile_path: "./cuda/cuda.${{ github.event.inputs.cuda_version }}.dockerfile"
       cuda_version: "${{ github.event.inputs.cuda_version }}"
       ubuntu_version: "${{ github.event.inputs.ubuntu_version }}"
-      nccl_tests_version: "${{ github.event.inputs.nccl_test_version }}"
+      nccl_version: "${{ github.event.inputs.nccl_version }}"
