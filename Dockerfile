@@ -1,5 +1,5 @@
 # cr.eu-north1.nebius.cloud/soperator/ubuntu:noble
-FROM cr.eu-north1.nebius.cloud/soperator/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS nebius_ubuntu
+FROM cr.eu-north1.nebius.cloud/soperator/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
 
 LABEL org.opencontainers.image.authors="Pavel Sofronii <pavel.sofrony@nebius.com>"
 
@@ -45,7 +45,7 @@ RUN curl -fsSL https://dr.nebius.cloud/public.gpg -o /usr/share/keyrings/nebius.
     echo "deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ stable main" >> /etc/apt/sources.list.d/nebius.list
 
 #######################################################################################################################
-FROM nebius_ubuntu AS cuda
+FROM neubuntu AS cuda
 
 RUN ARCH=$(uname -m) && \
         case "$ARCH" in \
@@ -109,7 +109,7 @@ RUN echo "export PATH=\$PATH:/usr/local/cuda/bin" > /etc/profile.d/path_cuda.sh 
 ENV LIBRARY_PATH=/usr/local/cuda/lib64/stubs
 
 #######################################################################################################################
-FROM cuda_base AS training
+FROM cuda AS training
 
 ARG CUDA_MAJOR
 ARG DCGMI_VERSION

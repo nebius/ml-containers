@@ -1,4 +1,4 @@
-name: Nebius ubuntu build
+name: Nebius ubuntu build (Neubuntu)
 
 on:
   workflow_dispatch:
@@ -19,13 +19,13 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/ml-containers/nebius_ubuntu:noble-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }}"
 
       - name: Build and push image
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t cr.eu-north1.nebius.cloud/ml-containers/nebius_ubuntu:noble-${{ env.DAYTIME }} \
-            --target nebius_ubuntu \
+            -t cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }} \
+            --target neubuntu \
             --push \
             .
