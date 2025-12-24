@@ -18,7 +18,7 @@ on:
 
 jobs:
   build_and_push:
-    runs-on: self-hosted
+    runs-on: X64
 
     name: Building and push image for ${{ inputs.dockerfile_path }}
     steps:
