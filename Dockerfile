@@ -1,5 +1,5 @@
-# cr.eu-north1.nebius.cloud/soperator/ubuntu:noble
-FROM cr.eu-north1.nebius.cloud/soperator/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
+# cr.eu-north1.nebius.cloud/ml-containers/ubuntu:noble
+FROM cr.eu-north1.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
 
 LABEL org.opencontainers.image.authors="Pavel Sofronii <pavel.sofrony@nebius.com>"
 
@@ -76,7 +76,7 @@ RUN chmod +x /opt/bin/install_driver_mocks.sh && \
 
 ARG CUDA_MAJOR
 ARG CUDA_MINOR
-ARG CUDA_VERSION=${CUDA_MAJOR}.${CUDA_MINOR}.0-1
+ARG CUDA_VERSION
 ARG CUDNN_VERSION
 ARG LIBNCCL_VERSION
 
