@@ -2,28 +2,54 @@ name: Build cuda images
 
 on:
   workflow_dispatch:
-    inputs:
-      cuda_version:
-        description: "Version of CUDA to build"
-        required: true
-        default: "12.9.0"
-        type: string
-      ubuntu_version:
-        description: "Version of the base image of ubuntu"
-        required: true
-        default: "ubuntu24.04"
-        type: string
-      nccl_version:
-        description: "NCCL lib version"
-        required: true
-        default: "nccl2.26.5-1"
-        type: string
 
 jobs:
-  cuda:
-    uses: ./.github/workflows/base_cuda.yml
-    with:
-      dockerfile_path: "./cuda/cuda.${{ github.event.inputs.cuda_version }}.dockerfile"
-      cuda_version: "${{ github.event.inputs.cuda_version }}"
-      ubuntu_version: "${{ github.event.inputs.ubuntu_version }}"
-      nccl_version: "${{ github.event.inputs.nccl_version }}"
+  build_and_push:
+    runs-on: X64
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: cuda12
+            cuda_major: "12"
+            cuda_minor: "9"
+            cuda_version: "12.9.0"
+            cudnn_version: "9.10.1.4-1"
+            libnccl_version: "2.26.5-1"
+            ubuntu_version: "ubuntu24.04"
+          - name: cuda13
+            cuda_major: "13"
+            cuda_minor: "0"
+            cuda_version: "13.0.2"
+            cudnn_version: "9.15.0.58-1"
+            libnccl_version: "2.28.7-1"
+            ubuntu_version: "ubuntu24.04"
+
+    name: Building and push image for ${{ matrix.name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Add docker-credential-nebius to PATH
+        run: echo "/home/ml_containers/.nebius/bin" >> $GITHUB_PATH
+
+      - name: Set daytime
+        run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Get image version name
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }}"
+
+      - name: Build and push images
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --build-arg CUDA_MAJOR=${{ matrix.cuda_major }} \
+            --build-arg CUDA_MINOR=${{ matrix.cuda_minor }} \
+            --build-arg CUDA_VERSION=${{ matrix.cuda_version }}-1 \
+            --build-arg CUDNN_VERSION=${{ matrix.cudnn_version }} \
+            --build-arg LIBNCCL_VERSION=${{ matrix.libnccl_version }} \
+            -t cr.eu-north1.nebius.cloud/soperator/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }} \
+            --target cuda \
+            --push \
+            .
