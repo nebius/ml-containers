@@ -80,6 +80,7 @@ ARG CUDA_VERSION
 ARG CUDNN_VERSION
 ARG LIBNCCL_VERSION
 
+# About CUDA packages https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#meta-packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         cuda=${CUDA_VERSION} \
@@ -92,6 +93,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Disable automatic upgrades for CUDA packages
 RUN apt-mark hold \
         cuda \
         libcublas-dev-${CUDA_MAJOR}-${CUDA_MINOR} \
@@ -114,6 +116,7 @@ FROM cuda AS training
 ARG CUDA_MAJOR
 ARG DCGMI_VERSION
 
+# Install dcgmi
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         datacenter-gpu-manager-4-cuda${CUDA_MAJOR}=${DCGMI_VERSION} && \
