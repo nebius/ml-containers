@@ -221,4 +221,4 @@ RUN apt update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=fryer /usr/local/bin/gpu-fryer /usr/bin/gpu-fryer
+COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer
