@@ -83,7 +83,7 @@ ARG LIBNCCL_VERSION
 # About CUDA packages https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#meta-packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        cuda=${CUDA_VERSION} \
+        cuda=${CUDA_VERSION}-1 \
         libcublas-dev-${CUDA_MAJOR}-${CUDA_MINOR} \
         libcudnn9-cuda-${CUDA_MAJOR}=${CUDNN_VERSION} \
         libcudnn9-dev-cuda-${CUDA_MAJOR}=${CUDNN_VERSION} \

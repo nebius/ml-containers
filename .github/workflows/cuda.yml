@@ -46,7 +46,7 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --build-arg CUDA_MAJOR=${{ matrix.cuda_major }} \
             --build-arg CUDA_MINOR=${{ matrix.cuda_minor }} \
-            --build-arg CUDA_VERSION=${{ matrix.cuda_version }}-1 \
+            --build-arg CUDA_VERSION=${{ matrix.cuda_version }} \
             --build-arg CUDNN_VERSION=${{ matrix.cudnn_version }} \
             --build-arg LIBNCCL_VERSION=${{ matrix.libnccl_version }} \
             -t cr.eu-north1.nebius.cloud/soperator/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }} \
