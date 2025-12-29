@@ -62,11 +62,11 @@ jobs:
             --build-arg CUDNN_VERSION=${{ matrix.cudnn_version }} \
             --build-arg LIBNCCL_VERSION=${{ matrix.libnccl_version }} \
             --build-arg DCGMI_VERSION=${{ matrix.dcgmi_version }} \
-            --build-arg ${{ matrix.nccl_tests_version }}
-            --build-arg ${{ matrix.openmpi_version }}
-            --build-arg ${{ matrix.openmpi_version_short }}
-            --build-arg ${{ matrix.ofed_version }}
-            --build-arg ${{ matrix.ucx_version }}
+            --build-arg NCCL_TESTS_VERSION=${{ matrix.nccl_tests_version }}
+            --build-arg OPENMPI_VERSION=${{ matrix.openmpi_version }}
+            --build-arg OPENMPI_VERSION_SHORT=${{ matrix.openmpi_version_short }}
+            --build-arg OFED_VERSION=${{ matrix.ofed_version }}
+            --build-arg UCX_VERSION=${{ matrix.ucx_version }}
             -t cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-nccl_tests${{ matrix.nccl_tests_version }}-${{ env.DAYTIME }} \
             --target training_diag \
             --push \
