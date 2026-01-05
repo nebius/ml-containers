@@ -21,7 +21,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Add Nebius Ubuntu mirror
-COPY repos/nebius-ubuntu.sources /etc/apt/sources.list.d/nebius-ubuntu.sources
+COPY ansible/roles/repos/files/nebius-ubuntu.sources /etc/apt/sources.list.d/nebius-ubuntu.sources
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
@@ -38,11 +38,29 @@ RUN apt-get update &&  \
 ENV LANG=en_US.utf8 \
     LC_ALL=en_US.utf8
 
-# Add Nebius public registry
-RUN curl -fsSL https://dr.nebius.cloud/public.gpg -o /usr/share/keyrings/nebius.gpg.pub && \
-    codename="$(. /etc/os-release && echo $VERSION_CODENAME)" && \
-    echo "deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ $codename main" > /etc/apt/sources.list.d/nebius.list && \
-    echo "deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ stable main" >> /etc/apt/sources.list.d/nebius.list
+# Install minimal python packages for Ansible
+RUN apt-get update &&  \
+    apt-get install -y \
+        python3.12="3.12.3-1ubuntu0.9" \
+        python3.12-venv="3.12.3-1ubuntu0.9"
+
+# Install Ansible and base configs
+COPY ansible/ansible.cfg ansible/requirements.txt ansible/inventory /opt/ansible/
+RUN cd /opt/ansible && /usr/bin/python3.12 -m venv .venv && \
+    . .venv/bin/activate && pip install -r requirements.txt
+
+ENV PATH="/opt/ansible/.venv/bin:${PATH}"
+WORKDIR /opt/ansible
+
+# Install python
+COPY ansible/python.yml /opt/ansible/python.yml
+COPY ansible/roles/python /opt/ansible/roles/python
+RUN ansible-playbook -i inventory/ -c local python.yml
+
+# Manage repositories
+COPY ansible/repos.yml /opt/ansible/repos.yml
+COPY ansible/roles/repos /opt/ansible/roles/repos
+RUN ansible-playbook -i inventory/ -c local repos.yml
 
 #######################################################################################################################
 FROM neubuntu AS cuda
