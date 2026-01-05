@@ -39,14 +39,15 @@ ENV LANG=en_US.utf8 \
     LC_ALL=en_US.utf8
 
 # Install minimal python packages for Ansible
-RUN apt install --update -y \
+RUN apt-get update &&  \
+    apt-get install -y \
         python3.12="3.12.3-1ubuntu0.9" \
         python3.12-venv="3.12.3-1ubuntu0.9"
 
 # Install Ansible and base configs
 COPY ansible/ansible.cfg ansible/requirements.txt ansible/inventory /opt/ansible/
-RUN cd /opt/ansible && ln -sf /usr/bin/python3.12 /usr/bin/python3 && \
-    python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+RUN cd /opt/ansible && /usr/bin/python3.12 -m venv .venv && \
+    . .venv/bin/activate && pip install -r requirements.txt
 
 ENV PATH="/opt/ansible/.venv/bin:${PATH}"
 WORKDIR /opt/ansible
