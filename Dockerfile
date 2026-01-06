@@ -1,7 +1,7 @@
 # cr.eu-north1.nebius.cloud/ml-containers/ubuntu:noble
 FROM cr.eu-north1.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
 
-LABEL org.opencontainers.image.authors="Pavel Sofronii <pavel.sofrony@nebius.com>"
+LABEL org.opencontainers.image.authors="Pavel Sofronii pavel.sofrony@nebius.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC

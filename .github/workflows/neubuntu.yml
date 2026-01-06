@@ -25,7 +25,7 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }} \
+            --output type=image,name=cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }},push=true,compression=zstd,compression-level=19,force-compression=true \
             --target neubuntu \
             --push \
             .
