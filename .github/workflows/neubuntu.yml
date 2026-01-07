@@ -27,5 +27,6 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --output type=image,name=cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }},push=true,compression=zstd,compression-level=19,force-compression=true \
             --target neubuntu \
+            --progress=plain \
             --push \
             .
