@@ -50,7 +50,7 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.nccl_tests_version }}-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-nccl_tests${{ matrix.nccl_tests_version }}-${{ env.DAYTIME }}"
 
       - name: Build and push images
         run: |
