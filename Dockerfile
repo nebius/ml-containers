@@ -63,22 +63,31 @@ COPY ansible/roles/repos /opt/ansible/roles/repos
 RUN ansible-playbook -i inventory/ -c local repos.yml
 
 #######################################################################################################################
-FROM neubuntu AS cuda
+FROM neubuntu AS base
 
-RUN ARCH=$(uname -m) && \
-        case "$ARCH" in \
-          x86_64) ARCH_DEB=x86_64 ;; \
-          aarch64) ARCH_DEB=sbsa ;; \
-          *) echo "Unsupported architecture: ${ARCH}" && exit 1 ;; \
-        esac && \
-        echo "Using architecture: ${ARCH_DEB}" && \
-    UBUNTU_VERSION_ID=$(grep VERSION_ID /etc/os-release | cut -d'"' -f2 | tr -d .) && \
-        echo "Using architecture: ${ARCH_DEB}, ubuntu version: ubuntu${UBUNTU_VERSION_ID}" && \
-        wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu${UBUNTU_VERSION_ID}/${ARCH_DEB}/cuda-keyring_1.1-1_all.deb && \
-    dpkg -i cuda-keyring_1.1-1_all.deb && \
-    rm -rf cuda-keyring_1.1-1_all.deb && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install common packages
+COPY ansible/common-packages.yml /opt/ansible/common-packages.yml
+COPY ansible/roles/common-packages /opt/ansible/roles/common-packages
+RUN ansible-playbook -i inventory/ -c local common-packages.yml
+
+# Install useful packages
+RUN apt-get update && \
+    apt -y install \
+        iputils-ping \
+        dnsutils \
+        telnet \
+        strace \
+        vim \
+        tree \
+        lsof \
+        tar
+
+#######################################################################################################################
+FROM base AS slurm
+
+
+#######################################################################################################################
+FROM base AS cuda
 
 ENV PATH=/usr/local/cuda/bin:${PATH}
 
@@ -150,10 +159,7 @@ ENV TAG="v1.1.0"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        git \
-        libssl-dev \
-        pkg-config \
-        build-essential && \
+        git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -180,11 +186,7 @@ ARG OFED_VERSION
 ARG UCX_VERSION
 
 # Install OpenMPI, UCX, and related config
-RUN DISTRO="$(. /etc/os-release && echo "${ID}${VERSION_ID}")"; \
-    ALT_ARCH="$(uname -m)"; \
-    cd /etc/apt/sources.list.d; \
-    wget https://linux.mellanox.com/public/repo/mlnx_ofed/${OFED_VERSION}/${DISTRO}/mellanox_mlnx_ofed.list; \
-    wget -qO - https://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -; \
+RUN ALT_ARCH="$(uname -m)"; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         openmpi=${OPENMPI_VERSION} \
@@ -201,7 +203,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       rdma-core="2404mlnx51-1.2404066" \
       ibverbs-utils="2404mlnx51-1.2404066" \
-      tar sudo \
       libibverbs1 librdmacm1 libmlx5-1 libpci3 \
       libibumad3 ibverbs-providers && \
     apt-get clean && \
