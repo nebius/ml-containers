@@ -49,7 +49,8 @@ jobs:
             --build-arg CUDA_VERSION=${{ matrix.cuda_version }} \
             --build-arg CUDNN_VERSION=${{ matrix.cudnn_version }} \
             --build-arg LIBNCCL_VERSION=${{ matrix.libnccl_version }} \
-            -t cr.eu-north1.nebius.cloud/soperator/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }} \
+            --output type=image,name=cr.eu-north1.nebius.cloud/soperator/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }},push=true,compression=zstd,compression-level=19,force-compression=true \
             --target cuda \
+            --progress=plain \
             --push \
             .

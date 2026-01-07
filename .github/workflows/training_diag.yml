@@ -67,7 +67,8 @@ jobs:
             --build-arg OPENMPI_VERSION_SHORT=${{ matrix.openmpi_version_short }} \
             --build-arg OFED_VERSION=${{ matrix.ofed_version }} \
             --build-arg UCX_VERSION=${{ matrix.ucx_version }} \
-            -t cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-nccl_tests${{ matrix.nccl_tests_version }}-${{ env.DAYTIME }} \
+            --output type=image,name=cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-nccl_tests${{ matrix.nccl_tests_version }}-${{ env.DAYTIME }},push=true,compression=zstd,compression-level=19,force-compression=true \
             --target training_diag \
+            --progress=plain \
             --push \
             .
