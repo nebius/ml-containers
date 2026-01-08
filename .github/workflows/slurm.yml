@@ -1,4 +1,4 @@
-name: Nebius ubuntu build (Neubuntu)
+name: Slurm image build
 
 on:
   workflow_dispatch:
@@ -7,7 +7,13 @@ jobs:
   build_and_push:
     runs-on: X64
 
-    name: Building image Nebius ubuntu
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - slurm_version: 25.05.5
+
+    name: Building image with Slurm version ${{ matrix.slurm_version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -19,15 +25,15 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/neubuntu:noble-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/slurm:${{ matrix.slurm_version }}-${{ env.DAYTIME }}"
 
       - name: Build and push image
         # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00ydq6th0tz1ycxs9
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/neubuntu:noble-${{ env.DAYTIME }} \
-            --target neubuntu \
+            -t cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/slurm:${{ matrix.slurm_version }}-${{ env.DAYTIME }} \
+            --target slurm \
             --progress=plain \
             --push \
             .

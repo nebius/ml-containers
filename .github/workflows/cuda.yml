@@ -38,9 +38,10 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/ml-containers/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }}"
 
       - name: Build and push images
+        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00ydq6th0tz1ycxs9
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
@@ -49,7 +50,7 @@ jobs:
             --build-arg CUDA_VERSION=${{ matrix.cuda_version }} \
             --build-arg CUDNN_VERSION=${{ matrix.cudnn_version }} \
             --build-arg LIBNCCL_VERSION=${{ matrix.libnccl_version }} \
-            --output type=image,name=cr.eu-north1.nebius.cloud/soperator/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }},push=true,compression=zstd,compression-level=19,force-compression=true \
+            -t cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }} \
             --target cuda \
             --progress=plain \
             --push \

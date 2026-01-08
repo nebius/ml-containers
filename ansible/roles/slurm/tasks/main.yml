@@ -1,0 +1,52 @@
+---
+
+# /var/spool/slurmd for bind-mounting it from the host. It's needed for sbatch to work
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop:
+    - /var/spool/slurmd
+    - /usr/lib/slurm
+  tags:
+    - slurm
+    - slurm-packages
+
+- name: Install Slurm packages
+  ansible.builtin.apt:
+    name: >-
+      {{
+        slurm_packages
+        | map('regex_replace', '$', '=' ~ slurm_version ~ '-1')
+        | list
+      }}
+    state: present
+    update_cache: true
+  tags:
+    - slurm
+    - slurm-packages
+
+- name: "Find all Slurm plugin files for architecture - {{ ansible_architecture }}"
+  ansible.builtin.find:
+    paths: "/usr/lib/{{ ansible_architecture }}-linux-gnu/slurm"
+    file_type: any
+  register: slurm_plugins
+  tags:
+    - slurm
+    - slurm-packages
+
+- name: Symlink all Slurm plugin files into /usr/lib/slurm excluding specific ones
+  ansible.builtin.file:
+    src: "{{ item.path }}"
+    dest: "/usr/lib/slurm/{{ item.path | basename }}"
+    state: link
+    force: true
+  loop: "{{ slurm_plugins.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  tags:
+    - slurm
+    - slurm-packages
