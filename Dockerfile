@@ -1,5 +1,5 @@
-# cr.eu-north1.nebius.cloud/ml-containers/ubuntu:noble
-FROM cr.eu-north1.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
+# https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00ydq6th0tz1ycxs9
+FROM cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
 
 LABEL org.opencontainers.image.authors="Pavel Sofronii pavel.sofrony@nebius.com"
 
@@ -85,6 +85,13 @@ RUN apt-get update && \
 #######################################################################################################################
 FROM base AS slurm
 
+# Install slurm client and divert files
+COPY ansible/slurm.yml /opt/ansible/slurm.yml
+COPY ansible/roles/slurm /opt/ansible/roles/slurm
+RUN ansible-playbook -i inventory/ -c local slurm.yml
+
+# Update linker cache
+RUN ldconfig
 
 #######################################################################################################################
 FROM base AS cuda
@@ -147,7 +154,8 @@ ARG DCGMI_VERSION
 # https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        datacenter-gpu-manager-4-cuda${CUDA_MAJOR}=${DCGMI_VERSION} && \
+        datacenter-gpu-manager-4-cuda${CUDA_MAJOR}=${DCGMI_VERSION} \
+        datacenter-gpu-manager-4-core=${DCGMI_VERSION} && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

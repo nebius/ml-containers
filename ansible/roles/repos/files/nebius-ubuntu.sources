@@ -1,5 +1,5 @@
 Types: deb
-URIs: https://mirror.storage.eu-north1.nebius.cloud/ubuntu
+URIs: https://mirror.eu.nebius.cloud/ubuntu
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 Components: main restricted universe multiverse
 Suites: noble noble-updates noble-security noble-backports
