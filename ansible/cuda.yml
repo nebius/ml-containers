@@ -1,0 +1,12 @@
+---
+
+- name: Install cuda packages
+  hosts: localhost
+  become: true
+  gather_facts: true
+  gather_subset:
+    - min
+  roles:
+    - cuda
+  tags:
+    - cuda

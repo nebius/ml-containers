@@ -21,6 +21,7 @@
   loop:
     - nvidia-container-toolkit.list
     - nebius-ubuntu.sources
+    - nebius-ubuntu-security.sources
   tags:
     - nvidia-container-toolkit-repo
     - repos
