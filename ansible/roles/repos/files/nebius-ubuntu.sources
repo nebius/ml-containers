@@ -2,6 +2,6 @@ Types: deb
 URIs: https://mirror.eu.nebius.cloud/ubuntu
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 Components: main restricted universe multiverse
-Suites: noble noble-updates noble-security noble-backports
+Suites: noble noble-updates noble-backports
 ## All sources include proposed
 # Suites: noble noble-updates noble-security noble-backports noble-proposed
