@@ -1,5 +1,5 @@
-# https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00ydq6th0tz1ycxs9
-FROM cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
+# https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
+FROM cr.eu-north1.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
 
 LABEL org.opencontainers.image.authors="Pavel Sofronii pavel.sofrony@nebius.com"
 
@@ -20,8 +20,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Add Nebius Ubuntu mirror
+# Add Nebius Ubuntu mirrors
 COPY ansible/roles/repos/files/nebius-ubuntu.sources /etc/apt/sources.list.d/nebius-ubuntu.sources
+COPY ansible/roles/repos/files/nebius-ubuntu-security.sources /etc/apt/sources.list.d/nebius-ubuntu-security.sources
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
@@ -41,8 +42,8 @@ ENV LANG=en_US.utf8 \
 # Install minimal python packages for Ansible
 RUN apt-get update &&  \
     apt-get install -y \
-        python3.12="3.12.3-1ubuntu0.9" \
-        python3.12-venv="3.12.3-1ubuntu0.9"
+        python3.12="3.12.3-1ubuntu0.10" \
+        python3.12-venv="3.12.3-1ubuntu0.10"
 
 # Install Ansible and base configs
 COPY ansible/ansible.cfg ansible/requirements.txt ansible/inventory /opt/ansible/
@@ -108,39 +109,13 @@ RUN chmod +x /opt/bin/install_driver_mocks.sh && \
     /opt/bin/install_driver_mocks.sh && \
     rm /opt/bin/install_driver_mocks.sh
 
-ARG CUDA_MAJOR
-ARG CUDA_MINOR
 ARG CUDA_VERSION
-ARG CUDNN_VERSION
-ARG LIBNCCL_VERSION
 
+# Install, hold and pin CUDA packages
 # About CUDA packages https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#meta-packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        cuda=${CUDA_VERSION}-1 \
-        libcublas-dev-${CUDA_MAJOR}-${CUDA_MINOR} \
-        libcudnn9-cuda-${CUDA_MAJOR}=${CUDNN_VERSION} \
-        libcudnn9-dev-cuda-${CUDA_MAJOR}=${CUDNN_VERSION} \
-        libcudnn9-headers-cuda-${CUDA_MAJOR}=${CUDNN_VERSION} \
-        libnccl-dev=${LIBNCCL_VERSION}+cuda${CUDA_MAJOR}.${CUDA_MINOR} \
-        libnccl2=${LIBNCCL_VERSION}+cuda${CUDA_MAJOR}.${CUDA_MINOR} && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Disable automatic upgrades for CUDA packages
-RUN apt-mark hold \
-        cuda \
-        libcublas-dev-${CUDA_MAJOR}-${CUDA_MINOR} \
-        libcudnn9-cuda-${CUDA_MAJOR} \
-        libcudnn9-dev-cuda-${CUDA_MAJOR} \
-        libcudnn9-headers-cuda-${CUDA_MAJOR} \
-        libnccl-dev \
-        libnccl2
-
-COPY cuda/pin_packages/ /etc/apt/preferences.d/
-
-RUN echo "export PATH=\$PATH:/usr/local/cuda/bin" > /etc/profile.d/path_cuda.sh && \
-    . /etc/profile.d/path_cuda.sh
+COPY ansible/cuda.yml /opt/ansible/cuda.yml
+COPY ansible/roles/cuda /opt/ansible/roles/cuda
+RUN ansible-playbook -i inventory/ -c local cuda.yml -e "cuda_version=${CUDA_VERSION}"
 
 ENV LIBRARY_PATH=/usr/local/cuda/lib64/stubs
 

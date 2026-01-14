@@ -13,10 +13,7 @@ jobs:
         include:
           - name: training_diag-cuda12
             cuda_major: "12"
-            cuda_minor: "9"
             cuda_version: "12.9.0"
-            cudnn_version: "9.10.1.4-1"
-            libnccl_version: "2.26.5-1"
             ubuntu_version: "ubuntu24.04"
             dcgmi_version: "1:4.4.2-1"
             nccl_tests_version: "2.16.4"
@@ -26,10 +23,7 @@ jobs:
             ucx_version: "1.17.0-1.2404066"
           - name: training_diag-cuda13
             cuda_major: "13"
-            cuda_minor: "0"
             cuda_version: "13.0.2"
-            cudnn_version: "9.15.0.58-1"
-            libnccl_version: "2.28.7-1"
             ubuntu_version: "ubuntu24.04"
             dcgmi_version: "1:4.4.2-1"
             nccl_tests_version: "2.17.6"
@@ -50,25 +44,22 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-nccl_tests${{ matrix.nccl_tests_version }}-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ env.DAYTIME }}"
 
       - name: Build and push images
-        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00ydq6th0tz1ycxs9
+        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --build-arg CUDA_MAJOR=${{ matrix.cuda_major }} \
-            --build-arg CUDA_MINOR=${{ matrix.cuda_minor }} \
             --build-arg CUDA_VERSION=${{ matrix.cuda_version }} \
-            --build-arg CUDNN_VERSION=${{ matrix.cudnn_version }} \
-            --build-arg LIBNCCL_VERSION=${{ matrix.libnccl_version }} \
             --build-arg DCGMI_VERSION=${{ matrix.dcgmi_version }} \
             --build-arg NCCL_TESTS_VERSION=${{ matrix.nccl_tests_version }} \
             --build-arg OPENMPI_VERSION=${{ matrix.openmpi_version }} \
             --build-arg OPENMPI_VERSION_SHORT=${{ matrix.openmpi_version_short }} \
             --build-arg OFED_VERSION=${{ matrix.ofed_version }} \
             --build-arg UCX_VERSION=${{ matrix.ucx_version }} \
-            -t cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-nccl_tests${{ matrix.nccl_tests_version }}-${{ env.DAYTIME }} \
+            -t cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ env.DAYTIME }} \
             --target training_diag \
             --push \
             --progress=plain \

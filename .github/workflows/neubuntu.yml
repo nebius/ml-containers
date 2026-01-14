@@ -19,14 +19,14 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/neubuntu:noble-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }}"
 
       - name: Build and push image
-        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00ydq6th0tz1ycxs9
+        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/neubuntu:noble-${{ env.DAYTIME }} \
+            -t cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }} \
             --target neubuntu \
             --progress=plain \
             --push \

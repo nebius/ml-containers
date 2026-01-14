@@ -1,0 +1,85 @@
+---
+
+- name: Set timezone to UTC
+  ansible.builtin.file:
+    src: /usr/share/zoneinfo/Etc/UTC
+    dest: /etc/localtime
+    state: link
+
+- name: Ensure /etc/timezone reflects UTC
+  ansible.builtin.copy:
+    dest: /etc/timezone
+    content: "Etc/UTC\n"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure a locale exists
+  community.general.locale_gen:
+    name: en_US.UTF-8
+    state: present
+  tags:
+    - locale
+    - cuda
+
+- name: Ensure system default locale is set
+  ansible.builtin.lineinfile:
+    path: /etc/default/locale
+    regexp: "^LANG="
+    line: "LANG=en_US.UTF-8"
+    mode: "0644"
+    create: true
+  tags:
+    - locale
+    - cuda
+
+- name: Assert cuda_version is supported ({{ cuda_version }})
+  ansible.builtin.assert:
+    that:
+      - cuda_version is defined
+      - cuda_packages[cuda_version] is defined
+      - cuda_hold_packages[cuda_version] is defined
+      - cuda_pin_content[cuda_version] is defined
+    fail_msg: >-
+      Unsupported or missing cuda_version '{{ cuda_version }}'.
+      Available: {{ cuda_packages.keys() | list | join(', ') }}
+  tags:
+    - cuda
+
+- name: Create APT pin file for CUDA {{ cuda_version }}
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/cuda-pins
+    content: "{{ cuda_pin_content[cuda_version] }}"
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - cuda
+
+- name: Install packages and related libraries for CUDA {{ cuda_version }}
+  ansible.builtin.apt:
+    name: "{{ cuda_packages[cuda_version] }}"
+    state: present
+    update_cache: true
+  tags:
+    - cuda
+
+- name: Hold CUDA-related packages (prevent upgrades)
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ cuda_hold_packages[cuda_version] }}"
+  loop_control:
+    label: "{{ item }}"
+  tags:
+    - cuda
+
+- name: Add /usr/local/cuda/bin to PATH system-wide
+  ansible.builtin.copy:
+    dest: /etc/profile.d/path_cuda.sh
+    content: "export PATH=/usr/local/cuda/bin:$PATH"
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - cuda

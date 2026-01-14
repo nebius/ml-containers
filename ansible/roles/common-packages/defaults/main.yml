@@ -32,6 +32,7 @@ common_packages:
   - ibverbs-utils=2404mlnx51-1.2404066
 
   # required for Slurm
+  - daemontools=1:0.76-10
   - iproute2=6.1.0-1ubuntu6.2
   - libhwloc-dev=2.10.0-1build1
   - libjson-c-dev=0.17-1build1
