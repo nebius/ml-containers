@@ -22,17 +22,11 @@ jobs:
       matrix:
         include:
           - name: training-cuda12
-            cuda_major: "12"
             cuda_version: "12.9.0"
-            libnccl_version: "2.26.5-1"
             ubuntu_version: "ubuntu24.04"
-            dcgmi_version: "1:4.4.2-1"
           - name: training-cuda13
-            cuda_major: "13"
             cuda_version: "13.0.2"
-            libnccl_version: "2.28.7-1"
             ubuntu_version: "ubuntu24.04"
-            dcgmi_version: "1:4.4.2-1"
 
     name: Build and push image for ${{ matrix.name }}
     env:
@@ -49,17 +43,15 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/training:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/training:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ env.DAYTIME }}"
 
       - name: Build and push images
-        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00ydq6th0tz1ycxs9
+        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --build-arg CUDA_MAJOR=${{ matrix.cuda_major }} \
             --build-arg CUDA_VERSION=${{ matrix.cuda_version }} \
-            --build-arg DCGMI_VERSION=${{ matrix.dcgmi_version }} \
-            -t cr.eu-north1.nebius.cloud/e00ydq6th0tz1ycxs9/training:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }} \
+            -t cr.eu-north1.nebius.cloud/ml-containers/training:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }} \
             --target training \
             --progress=plain \
             --push \

@@ -27,20 +27,12 @@ jobs:
             ubuntu_version: "ubuntu24.04"
             dcgmi_version: "1:4.4.2-1"
             nccl_tests_version: "2.16.4"
-            openmpi_version: "4.1.7a1-1.2404066"
-            openmpi_version_short: "4.1.7a1"
-            ofed_version: "24.04-0.7.0.0"
-            ucx_version: "1.17.0-1.2404066"
           - name: training_diag-cuda13
             cuda_major: "13"
             cuda_version: "13.0.2"
             ubuntu_version: "ubuntu24.04"
             dcgmi_version: "1:4.4.2-1"
             nccl_tests_version: "2.17.6"
-            openmpi_version: "4.1.7a1-1.2404066"
-            openmpi_version_short: "4.1.7a1"
-            ofed_version: "24.04-0.7.0.0"
-            ucx_version: "1.17.0-1.2404066"
 
     name: Build and push image for ${{ matrix.name }}
     env:
@@ -68,10 +60,6 @@ jobs:
             --build-arg CUDA_VERSION=${{ matrix.cuda_version }} \
             --build-arg DCGMI_VERSION=${{ matrix.dcgmi_version }} \
             --build-arg NCCL_TESTS_VERSION=${{ matrix.nccl_tests_version }} \
-            --build-arg OPENMPI_VERSION=${{ matrix.openmpi_version }} \
-            --build-arg OPENMPI_VERSION_SHORT=${{ matrix.openmpi_version_short }} \
-            --build-arg OFED_VERSION=${{ matrix.ofed_version }} \
-            --build-arg UCX_VERSION=${{ matrix.ucx_version }} \
             -t cr.eu-north1.nebius.cloud/ml-containers/training_diag:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ env.DAYTIME }} \
             --target training_diag \
             --push \
