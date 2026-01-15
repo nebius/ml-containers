@@ -122,17 +122,19 @@ ENV LIBRARY_PATH=/usr/local/cuda/lib64/stubs
 #######################################################################################################################
 FROM cuda AS training
 
-ARG CUDA_MAJOR
-ARG DCGMI_VERSION
-
-# Install dcgmi tools
-# https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        datacenter-gpu-manager-4-cuda${CUDA_MAJOR}=${DCGMI_VERSION} \
-        datacenter-gpu-manager-4-core=${DCGMI_VERSION} && \
+      rdma-core="2404mlnx51-1.2404066" \
+      ibverbs-utils="2404mlnx51-1.2404066" \
+      libibverbs1 librdmacm1 libmlx5-1 libpci3 \
+      libibumad3 ibverbs-providers && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Install OpenMPI, UCX, and related config
+COPY ansible/openmpi.yml /opt/ansible/openmpi.yml
+COPY ansible/roles/openmpi /opt/ansible/roles/openmpi
+RUN ansible-playbook -i inventory/ -c local openmpi.yml
 
 #######################################################################################################################
 FROM cuda AS fryer
@@ -159,39 +161,19 @@ RUN cargo build --release
 #######################################################################################################################
 FROM training AS training_diag
 
-ARG CUDA_VERSION
-ARG NCCL_TESTS_VERSION
-ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
-ARG MLC_TOOL_URL="https://downloadmirror.intel.com/866182/mlc_v3.12.tgz"
-ARG OPENMPI_VERSION
-ARG OPENMPI_VERSION_SHORT
-ARG OFED_VERSION
-ARG UCX_VERSION
-
-# Install OpenMPI, UCX, and related config
-RUN ALT_ARCH="$(uname -m)"; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        openmpi=${OPENMPI_VERSION} \
-        ucx=${UCX_VERSION}; \
-    apt-get clean; \
-    rm -rf /var/lib/apt/lists/*; \
-    echo "export PATH=\$PATH:/usr/mpi/gcc/openmpi-${OPENMPI_VERSION_SHORT}/bin" > /etc/profile.d/path_openmpi.sh; \
-    chmod +x /etc/profile.d/path_openmpi.sh; \
-    printf "/lib/${ALT_ARCH}-linux-gnu\n/usr/lib/${ALT_ARCH}-linux-gnu\n/usr/local/cuda/targets/${ALT_ARCH}-linux/lib\n/usr/mpi/gcc/openmpi-${OPENMPI_VERSION_SHORT}/lib\n" > /etc/ld.so.conf.d/openmpi.conf; \
-    ldconfig
-
-
+ARG CUDA_MAJOR
+ARG DCGMI_VERSION
+# Install dcgmi tools
+# https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      rdma-core="2404mlnx51-1.2404066" \
-      ibverbs-utils="2404mlnx51-1.2404066" \
-      libibverbs1 librdmacm1 libmlx5-1 libpci3 \
-      libibumad3 ibverbs-providers && \
+        datacenter-gpu-manager-4-cuda${CUDA_MAJOR}=${DCGMI_VERSION} \
+        datacenter-gpu-manager-4-core=${DCGMI_VERSION} && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Intel MLC binary
+ARG MLC_TOOL_URL="https://downloadmirror.intel.com/866182/mlc_v3.12.tgz"
 RUN mkdir -p /tmp/mlc && \
     wget "$MLC_TOOL_URL" -O /tmp/mlc/mlc.tgz && \
     tar -xzf /tmp/mlc/mlc.tgz -C /tmp/mlc && \
@@ -200,6 +182,9 @@ RUN mkdir -p /tmp/mlc && \
     rm -rf /tmp/mlc
 
 # Download NCCL tests, CUDA samples, and perftest executables
+ARG CUDA_VERSION
+ARG NCCL_TESTS_VERSION
+ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
 RUN ARCH=$(uname -m) && \
     echo "Using architecture: $ARCH" && \
     echo "Downloading NCCL tests" && \
@@ -215,12 +200,5 @@ RUN ARCH=$(uname -m) && \
     tar -xvzf /tmp/perftest-${ARCH}.tar.gz -C /usr/bin && \
     chmod +x /usr/bin/ib_* && \
     rm -rf /tmp/perftest-${ARCH}.tar.gz
-
-# Install numactl
-RUN apt update && \
-    apt install -y \
-        numactl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer
