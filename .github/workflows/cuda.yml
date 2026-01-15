@@ -4,8 +4,18 @@ on:
   workflow_dispatch:
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      daytime: ${{ steps.set_daytime.outputs.daytime }}
+    steps:
+      - id: set_daytime
+        name: Compute shared DAYTIME
+        run: echo "daytime=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
   build_and_push:
-    runs-on: X64
+    runs-on: [self-hosted, X64]
+    needs: prepare
 
     strategy:
       fail-fast: false
@@ -19,6 +29,9 @@ jobs:
             ubuntu_version: "ubuntu24.04"
 
     name: Building and push image for ${{ matrix.name }}
+    env:
+      DAYTIME: ${{ needs.prepare.outputs.daytime }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -30,7 +43,7 @@ jobs:
         run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/ml-containers/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }}"
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ env.DAYTIME }}"
 
       - name: Build and push images
         # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
@@ -38,7 +51,7 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --build-arg CUDA_VERSION=${{ matrix.cuda_version }} \
-            -t cr.eu-north1.nebius.cloud/ml-containers/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.libnccl_version }}-${{ env.DAYTIME }} \
+            -t cr.eu-north1.nebius.cloud/ml-containers/cuda:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ env.DAYTIME }} \
             --target cuda \
             --progress=plain \
             --push \
