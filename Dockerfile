@@ -161,16 +161,11 @@ RUN cargo build --release
 #######################################################################################################################
 FROM training AS training_diag
 
-ARG CUDA_MAJOR
-ARG DCGMI_VERSION
 # Install dcgmi tools
 # https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        datacenter-gpu-manager-4-cuda${CUDA_MAJOR}=${DCGMI_VERSION} \
-        datacenter-gpu-manager-4-core=${DCGMI_VERSION} && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+COPY ansible/dcgmi.yml /opt/ansible/dcgmi.yml
+COPY ansible/roles/dcgmi /opt/ansible/roles/dcgmi
+RUN ansible-playbook -i inventory/ -c local dcgmi.yml
 
 # Install Intel MLC binary
 ARG MLC_TOOL_URL="https://downloadmirror.intel.com/866182/mlc_v3.12.tgz"
@@ -181,9 +176,15 @@ RUN mkdir -p /tmp/mlc && \
     cp /tmp/mlc/Linux/mlc /usr/local/bin/mlc && \
     rm -rf /tmp/mlc
 
-# Download NCCL tests, CUDA samples, and perftest executables
+# Download NCCL tests executables
 ARG CUDA_VERSION
 ARG NCCL_TESTS_VERSION
+COPY ansible/nccl-tests.yml /opt/ansible/nccl-tests.yml
+COPY ansible/roles/nccl-tests /opt/ansible/roles/nccl-tests
+RUN ansible-playbook -i inventory/ -c local nccl-tests.yml -e "nccl_tests_cuda_version=${CUDA_VERSION}" \
+    -e "nccl_tests_version=${NCCL_TESTS_VERSION}"
+
+# Download CUDA samples, and perftest executables
 ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
 RUN ARCH=$(uname -m) && \
     echo "Using architecture: $ARCH" && \
