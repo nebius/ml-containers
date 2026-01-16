@@ -15,9 +15,6 @@ jobs:
       - name: Add docker-credential-nebius to PATH
         run: echo "/home/ml_containers/.nebius/bin" >> $GITHUB_PATH
 
-      - name: Set daytime
-        run: echo "DAYTIME=$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-
       - name: Get image version name
         run: echo "cr.eu-north1.nebius.cloud/ml-containers/neubuntu:noble-${{ env.DAYTIME }}"
 
