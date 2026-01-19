@@ -1,0 +1,10 @@
+---
+
+# Map CUDA *major* version -> dcgmi packages name
+dcgmi_cuda_packages_map:
+  "12":
+    - "datacenter-gpu-manager-4-cuda12=1:4.5.0-1"
+    - "datacenter-gpu-manager-4-core=1:4.5.0-1"
+  "13":
+    - "datacenter-gpu-manager-4-cuda13=1:4.5.0-1"
+    - "datacenter-gpu-manager-4-core=1:4.5.0-1"
