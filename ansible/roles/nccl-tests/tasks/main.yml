@@ -21,7 +21,7 @@
       }}
     dest: "/tmp/nccl-tests-perf-{{ ansible_architecture }}.tar.gz"
     mode: "0644"
-    checksum: "{{ nccl_tests_sha_map[nccl_tests_version][ansible_architecture] }}"
+    checksum: "{{ nccl_tests_sha_map[nccl_tests_cuda_version][nccl_tests_version][ansible_architecture] }}"
   tags:
     - nccl-tests
 
