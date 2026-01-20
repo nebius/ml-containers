@@ -1,11 +1,12 @@
 ---
 
-- name: Assert nccl_tests_cuda_version is empty - ({{ nccl_tests_cuda_version }})
+- name: Assert empty vars
   ansible.builtin.assert:
     that:
       - nccl_tests_cuda_version is defined
+      - nccl_tests_version is defined
     fail_msg: >-
-      Missing nccl_tests_cuda_version
+      Missing nccl_tests - {{ nccl_tests_version }} or cuda {{ nccl_tests_cuda_version }} version
   tags:
     - nccl-tests
 
@@ -13,13 +14,14 @@
   ansible.builtin.get_url:
     url: >-
       {{
-        nccl_tests_deb_repo_url ~
+        deb_repo_download_url ~
         '/nccl_tests_' ~ nccl_tests_cuda_version ~
         '_ubuntu' ~ ansible_distribution_version ~
         '/nccl-tests-perf-' ~ ansible_architecture ~ '.tar.gz'
       }}
     dest: "/tmp/nccl-tests-perf-{{ ansible_architecture }}.tar.gz"
     mode: "0644"
+    checksum: "{{ nccl_tests_sha_map[nccl_tests_cuda_version][nccl_tests_version][ansible_architecture] }}"
   tags:
     - nccl-tests
 
@@ -29,5 +31,6 @@
     dest: /usr/bin
     remote_src: true
     mode: "0755"
+    creates: /usr/bin/all_reduce_perf_mpi
   tags:
     - nccl-tests

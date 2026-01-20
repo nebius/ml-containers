@@ -168,13 +168,9 @@ COPY ansible/roles/dcgmi /opt/ansible/roles/dcgmi
 RUN ansible-playbook -i inventory/ -c local dcgmi.yml
 
 # Install Intel MLC binary
-ARG MLC_TOOL_URL="https://downloadmirror.intel.com/866182/mlc_v3.12.tgz"
-RUN mkdir -p /tmp/mlc && \
-    wget "$MLC_TOOL_URL" -O /tmp/mlc/mlc.tgz && \
-    tar -xzf /tmp/mlc/mlc.tgz -C /tmp/mlc && \
-    chmod +x /tmp/mlc/Linux/mlc && \
-    cp /tmp/mlc/Linux/mlc /usr/local/bin/mlc && \
-    rm -rf /tmp/mlc
+COPY ansible/mlc.yml /opt/ansible/mlc.yml
+COPY ansible/roles/mlc /opt/ansible/roles/mlc
+RUN ansible-playbook -i inventory/ -c local mlc.yml
 
 # Download NCCL tests executables
 ARG CUDA_VERSION
@@ -184,22 +180,14 @@ COPY ansible/roles/nccl-tests /opt/ansible/roles/nccl-tests
 RUN ansible-playbook -i inventory/ -c local nccl-tests.yml -e "nccl_tests_cuda_version=${CUDA_VERSION}" \
     -e "nccl_tests_version=${NCCL_TESTS_VERSION}"
 
-# Download CUDA samples, and perftest executables
-ARG PACKAGES_REPO_URL="https://github.com/nebius/slurm-deb-packages/releases/download"
-RUN ARCH=$(uname -m) && \
-    echo "Using architecture: $ARCH" && \
-    echo "Downloading NCCL tests" && \
-    wget -P /tmp "${PACKAGES_REPO_URL}/nccl_tests_${CUDA_VERSION}_ubuntu24.04/nccl-tests-perf-${ARCH}.tar.gz" && \
-    tar -xvzf /tmp/nccl-tests-perf-${ARCH}.tar.gz -C /usr/bin && \
-    rm -rf /tmp/nccl-tests-perf-${ARCH}.tar.gz && \
-    echo "Downloading CUDA samples" && \
-    wget -P /tmp "${PACKAGES_REPO_URL}/cuda_samples_${CUDA_VERSION}_ubuntu24.04/cuda-samples-${ARCH}.tar.gz" && \
-    tar -xvzf /tmp/cuda-samples-${ARCH}.tar.gz -C /usr/bin --strip-components=1 && \
-    rm -rf /tmp/cuda-samples-${ARCH}.tar.gz && \
-    echo "Downloading perftest" && \
-    wget -P /tmp "${PACKAGES_REPO_URL}/perftest_${CUDA_VERSION}_ubuntu24.04/perftest-${ARCH}.tar.gz" && \
-    tar -xvzf /tmp/perftest-${ARCH}.tar.gz -C /usr/bin && \
-    chmod +x /usr/bin/ib_* && \
-    rm -rf /tmp/perftest-${ARCH}.tar.gz
+# Download cuda-samples executables
+COPY ansible/cuda-samples.yml /opt/ansible/cuda-samples.yml
+COPY ansible/roles/cuda-samples /opt/ansible/roles/cuda-samples
+RUN ansible-playbook -i inventory/ -c local cuda-samples.yml -e "cuda_samples_cuda_version=${CUDA_VERSION}"
+
+# Download perftest executables
+COPY ansible/perftest.yml /opt/ansible/perftest.yml
+COPY ansible/roles/perftest /opt/ansible/roles/perftest
+RUN ansible-playbook -i inventory/ -c local perftest.yml -e "perftest_cuda_version=${CUDA_VERSION}"
 
 COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer

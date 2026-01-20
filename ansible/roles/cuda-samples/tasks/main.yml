@@ -1,0 +1,37 @@
+---
+
+- name: Assert cuda_samples_cuda_version is empty - ({{ cuda_samples_cuda_version }})
+  ansible.builtin.assert:
+    that:
+      - cuda_samples_cuda_version is defined
+    fail_msg: >-
+      Missing cuda_samples_cuda_version
+  tags:
+    - cuda-samples
+
+- name: Download cuda-samples archive
+  ansible.builtin.get_url:
+    url: >-
+      {{
+        deb_repo_download_url ~
+        '/cuda_samples_' ~ cuda_samples_cuda_version ~
+        '_ubuntu' ~ ansible_distribution_version ~
+        '/cuda-samples-' ~ ansible_architecture ~ '.tar.gz'
+      }}
+    dest: "/tmp/cuda-samples-{{ ansible_architecture }}.tar.gz"
+    mode: "0644"
+    checksum: "{{ cuda_samples_sha_map[cuda_samples_cuda_version][ansible_architecture] }}"
+  tags:
+    - cuda-samples
+
+- name: Extract cuda-samples archive into /usr/bin
+  ansible.builtin.unarchive:
+    src: "/tmp/cuda-samples-{{ ansible_architecture }}.tar.gz"
+    dest: /usr/bin
+    remote_src: true
+    mode: "0755"
+    extra_opts:
+      - --strip-components=1
+    creates: /usr/bin/deviceQuery
+  tags:
+    - cuda-samples
