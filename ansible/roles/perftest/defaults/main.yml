@@ -1,0 +1,10 @@
+---
+
+perftest_sha_map:
+  # cuda: architecture
+  "12.9.0":
+    "x86_64": "sha256:0e56f58a3f55c3931b9615610ade4528175fd7b2aae7aed63a7b5b7569f279a5"
+    "aarch64": "sha256:67d3f6e6de0410006aeb8f9b1c70e92f60e1a781e8487ca1b1be9c0d05ac4c71"
+  "13.0.2":
+    "x86_64": "sha256:144737250905df95cee01c2b54bd7dc24f1e3fdb306f6184521b6399ebea4c7a"
+    "aarch64": "sha256:96f08b804f8d7a39b40b43859f615960a167cddedde1433dd7589693f2869c88"

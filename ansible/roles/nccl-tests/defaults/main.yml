@@ -1,3 +1,12 @@
 ---
 
-nccl_tests_deb_repo_url: "https://github.com/nebius/slurm-deb-packages/releases/download"
+nccl_tests_sha_map:
+  # cuda: nccl_tests: architecture
+  "12.9.0":
+    "2.16.4":
+      "x86_64": "sha256:03b5d09491f95159d4c252337513b87cd996c5da97cb591ca399b60abff3a2b5"
+      "aarch64": "sha256:1450af54329f69671dd012e42d3d4e5e6ed8222026e7dd684a008bd1e5c12dbf"
+  "13.0.2":
+    "2.17.6":
+      "x86_64": "sha256:f3ae742cb81e4b8da62a9ab9c5d68183378572860b3d03f2172214ebb86187c4"
+      "aarch64": "sha256:cfb3d954bb064c68814206941cf9d45849dd4cd8b7ac9b6be732cd4254093cdc"

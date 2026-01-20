@@ -1,0 +1,35 @@
+---
+
+- name: Assert perftest_cuda_version is empty - ({{ perftest_cuda_version }})
+  ansible.builtin.assert:
+    that:
+      - perftest_cuda_version is defined
+    fail_msg: >-
+      Missing perftest_cuda_version
+  tags:
+    - perftest
+
+- name: Download perftest archive
+  ansible.builtin.get_url:
+    url: >-
+      {{
+        deb_repo_download_url ~
+        '/perftest_' ~ perftest_cuda_version ~
+        '_ubuntu' ~ ansible_distribution_version ~
+        '/perftest-' ~ ansible_architecture ~ '.tar.gz'
+      }}
+    dest: "/tmp/perftest-{{ ansible_architecture }}.tar.gz"
+    mode: "0644"
+    checksum: "{{ perftest_sha_map[perftest_cuda_version][ansible_architecture] }}"
+  tags:
+    - perftest
+
+- name: Extract perftest archive into /usr/bin
+  ansible.builtin.unarchive:
+    src: "/tmp/perftest-{{ ansible_architecture }}.tar.gz"
+    dest: /usr/bin
+    remote_src: true
+    mode: "0755"
+    creates: /usr/bin/ib_write_bw
+  tags:
+    - perftest

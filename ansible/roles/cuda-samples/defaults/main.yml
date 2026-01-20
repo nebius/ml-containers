@@ -1,0 +1,10 @@
+---
+
+cuda_samples_sha_map:
+  # cuda: architecture
+  "12.9.0":
+    "x86_64": "sha256:65249b4748c418add2da0b66a91f4e7996e4878ef3a65e487b3fb06621019eaa"
+    "aarch64": "sha256:597a9d151bcfa6261979eeb7ef37c7a89061c33a4ce0895adee132f7d0c702ad"
+  "13.0.2":
+    "x86_64": "sha256:828436a5be5a615b667a25607419b596ea0004a06dfb3dfec66141d1430bdf7a"
+    "aarch64": "sha256:3d7ea88014f7e7fa7112abbacfd66e8d111445d100a1c7a7d4fa69d1b12336c3"

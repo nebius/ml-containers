@@ -1,0 +1,38 @@
+---
+
+- name: Ensure temp dir for MLC exists
+  ansible.builtin.file:
+    path: /tmp/mlc
+    state: directory
+    mode: "0755"
+  tags:
+    - mlc
+
+- name: Download MLC tool archive
+  ansible.builtin.get_url:
+    url: "{{ mlc_tool_url }}"
+    dest: /tmp/mlc/mlc.tgz
+    mode: "0644"
+    checksum: "sha256:4b8f7685d71998dd5d445432ab40c2115158462bfcd359113ae551a84e250c50"
+  tags:
+    - mlc
+
+- name: Extract MLC tool
+  ansible.builtin.unarchive:
+    src: /tmp/mlc/mlc.tgz
+    dest: /tmp/mlc
+    remote_src: true
+    creates: /tmp/mlc/Linux/mlc
+  tags:
+    - mlc
+
+- name: Install MLC binary to /usr/local/bin
+  ansible.builtin.copy:
+    src: /tmp/mlc/Linux/mlc
+    dest: /usr/local/bin/mlc
+    mode: "0755"
+    owner: root
+    group: root
+    remote_src: true
+  tags:
+    - mlc
