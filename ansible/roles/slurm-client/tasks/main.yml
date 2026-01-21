@@ -19,7 +19,7 @@
     name: >-
       {{
         slurm_client_packages
-        | map('regex_replace', '$', '=' ~ slurm.version ~ '-1')
+        | map('regex_replace', '$', '=' ~ slurm_version ~ '-1')
         | list
       }}
     state: present
