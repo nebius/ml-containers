@@ -191,3 +191,12 @@ COPY ansible/roles/perftest /opt/ansible/roles/perftest
 RUN ansible-playbook -i inventory/ -c local perftest.yml -e "perftest_cuda_version=${CUDA_VERSION}"
 
 COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer
+
+#######################################################################################################################
+FROM training_diag AS slurm_training_diag
+
+# Install slurm client and divert files
+COPY ansible/slurm-client.yml /opt/ansible/slurm-client.yml
+COPY ansible/roles/slurm-client /opt/ansible/roles/slurm-client
+COPY ansible/roles/slurm-divert /opt/ansible/roles/slurm-divert
+RUN ansible-playbook -i inventory/ -c local slurm-client.yml
