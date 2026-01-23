@@ -51,17 +51,18 @@ RUN cd /opt/ansible && /usr/bin/python3.12 -m venv .venv && \
     . .venv/bin/activate && pip install -r requirements.txt
 
 ENV PATH="/opt/ansible/.venv/bin:${PATH}"
-WORKDIR /opt/ansible
 
 # Install python
 COPY ansible/python.yml /opt/ansible/python.yml
 COPY ansible/roles/python /opt/ansible/roles/python
-RUN ansible-playbook -i inventory/ -c local python.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local python.yml
 
 # Manage repositories
 COPY ansible/repos.yml /opt/ansible/repos.yml
 COPY ansible/roles/repos /opt/ansible/roles/repos
-RUN ansible-playbook -i inventory/ -c local repos.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local repos.yml
 
 #######################################################################################################################
 FROM neubuntu AS base
@@ -69,7 +70,8 @@ FROM neubuntu AS base
 # Install common packages
 COPY ansible/common-packages.yml /opt/ansible/common-packages.yml
 COPY ansible/roles/common-packages /opt/ansible/roles/common-packages
-RUN ansible-playbook -i inventory/ -c local common-packages.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local common-packages.yml
 
 # Install useful packages
 RUN apt-get update && \
@@ -89,7 +91,8 @@ FROM base AS slurm
 # Install slurm client and divert files
 COPY ansible/slurm.yml /opt/ansible/slurm.yml
 COPY ansible/roles/slurm /opt/ansible/roles/slurm
-RUN ansible-playbook -i inventory/ -c local slurm.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local slurm.yml
 
 # Update linker cache
 RUN ldconfig
@@ -115,7 +118,8 @@ ARG CUDA_VERSION
 # About CUDA packages https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#meta-packages
 COPY ansible/cuda.yml /opt/ansible/cuda.yml
 COPY ansible/roles/cuda /opt/ansible/roles/cuda
-RUN ansible-playbook -i inventory/ -c local cuda.yml -e "cuda_version=${CUDA_VERSION}"
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local cuda.yml -e "cuda_version=${CUDA_VERSION}"
 
 ENV LIBRARY_PATH=/usr/local/cuda/lib64/stubs
 
@@ -134,7 +138,8 @@ RUN apt-get update && \
 # Install OpenMPI, UCX, and related config
 COPY ansible/openmpi.yml /opt/ansible/openmpi.yml
 COPY ansible/roles/openmpi /opt/ansible/roles/openmpi
-RUN ansible-playbook -i inventory/ -c local openmpi.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local openmpi.yml
 
 #######################################################################################################################
 FROM cuda AS fryer
@@ -165,30 +170,35 @@ FROM training AS training_diag
 # https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
 COPY ansible/dcgmi.yml /opt/ansible/dcgmi.yml
 COPY ansible/roles/dcgmi /opt/ansible/roles/dcgmi
-RUN ansible-playbook -i inventory/ -c local dcgmi.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local dcgmi.yml
 
 # Install Intel MLC binary
 COPY ansible/mlc.yml /opt/ansible/mlc.yml
 COPY ansible/roles/mlc /opt/ansible/roles/mlc
-RUN ansible-playbook -i inventory/ -c local mlc.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local mlc.yml
 
 # Download NCCL tests executables
 ARG CUDA_VERSION
 ARG NCCL_TESTS_VERSION
 COPY ansible/nccl-tests.yml /opt/ansible/nccl-tests.yml
 COPY ansible/roles/nccl-tests /opt/ansible/roles/nccl-tests
-RUN ansible-playbook -i inventory/ -c local nccl-tests.yml -e "nccl_tests_cuda_version=${CUDA_VERSION}" \
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local nccl-tests.yml -e "nccl_tests_cuda_version=${CUDA_VERSION}" \
     -e "nccl_tests_version=${NCCL_TESTS_VERSION}"
 
 # Download cuda-samples executables
 COPY ansible/cuda-samples.yml /opt/ansible/cuda-samples.yml
 COPY ansible/roles/cuda-samples /opt/ansible/roles/cuda-samples
-RUN ansible-playbook -i inventory/ -c local cuda-samples.yml -e "cuda_samples_cuda_version=${CUDA_VERSION}"
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local cuda-samples.yml -e "cuda_samples_cuda_version=${CUDA_VERSION}"
 
 # Download perftest executables
 COPY ansible/perftest.yml /opt/ansible/perftest.yml
 COPY ansible/roles/perftest /opt/ansible/roles/perftest
-RUN ansible-playbook -i inventory/ -c local perftest.yml -e "perftest_cuda_version=${CUDA_VERSION}"
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local perftest.yml -e "perftest_cuda_version=${CUDA_VERSION}"
 
 COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer
 
@@ -199,4 +209,5 @@ FROM training_diag AS slurm_training_diag
 COPY ansible/slurm-client.yml /opt/ansible/slurm-client.yml
 COPY ansible/roles/slurm-client /opt/ansible/roles/slurm-client
 COPY ansible/roles/slurm-divert /opt/ansible/roles/slurm-divert
-RUN ansible-playbook -i inventory/ -c local slurm-client.yml
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local slurm-client.yml
