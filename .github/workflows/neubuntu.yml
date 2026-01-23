@@ -4,10 +4,23 @@ on:
   workflow_dispatch:
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      daytime: ${{ steps.set_daytime.outputs.daytime }}
+    steps:
+      - id: set_daytime
+        name: Compute shared DAYTIME
+        run: echo "daytime=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
   build_and_push:
-    runs-on: X64
+    runs-on: [self-hosted, X64]
+    needs: prepare
 
     name: Building image Nebius ubuntu
+    env:
+      DAYTIME: ${{ needs.prepare.outputs.daytime }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
