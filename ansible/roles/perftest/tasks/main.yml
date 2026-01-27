@@ -21,6 +21,7 @@
     dest: "/tmp/perftest-{{ ansible_architecture }}.tar.gz"
     mode: "0644"
     checksum: "{{ perftest_sha_map[perftest_cuda_version][ansible_architecture] }}"
+  register: perftest_dl
   tags:
     - perftest
 
@@ -30,6 +31,7 @@
     dest: /usr/bin
     remote_src: true
     mode: "0755"
-    creates: /usr/bin/ib_write_bw
+    creates: "{{ (perftest_force | default(false)) | ternary(omit, '/usr/bin/ib_write_bw') }}"
+  when: (perftest_force | default(false) | bool) or perftest_dl.changed
   tags:
     - perftest

@@ -51,6 +51,18 @@
   tags:
     - dcgmi
 
+- name: Remove old dcgmi packages for {{ dcgmi_cuda_old_version }}
+  ansible.builtin.apt:
+    name: "{{ dcgmi_cuda_packages_map[dcgmi_cuda_old_version] }}"
+    state: absent
+    purge: true
+    autoremove: true
+    update_cache: false
+    force_apt_get: true
+  when: dcgmi_cuda_old_version is defined
+  tags:
+    - dcgmi
+
 - name: Ensure dcgmi packages is installed for detected CUDA {{ dcgmi_cuda_major_version }}
   ansible.builtin.apt:
     name: "{{ dcgmi_packages }}"

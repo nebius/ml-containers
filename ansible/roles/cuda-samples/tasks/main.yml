@@ -21,6 +21,7 @@
     dest: "/tmp/cuda-samples-{{ ansible_architecture }}.tar.gz"
     mode: "0644"
     checksum: "{{ cuda_samples_sha_map[cuda_samples_cuda_version][ansible_architecture] }}"
+  register: cuda_samples_dl
   tags:
     - cuda-samples
 
@@ -32,6 +33,7 @@
     mode: "0755"
     extra_opts:
       - --strip-components=1
-    creates: /usr/bin/deviceQuery
+    creates: "{{ (cuda_samples_force | default(false)) | ternary(omit, '/usr/bin/deviceQuery') }}"
+  when: (cuda_samples_force | default(false) | bool) or cuda_samples_dl.changed
   tags:
     - cuda-samples
