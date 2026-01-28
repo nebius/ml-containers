@@ -51,7 +51,7 @@
   tags:
     - dcgmi
 
-- name: Remove old dcgmi packages for {{ dcgmi_cuda_old_version }}
+- name: Remove old dcgmi packages
   ansible.builtin.apt:
     name: "{{ dcgmi_cuda_packages_map[dcgmi_cuda_old_version] }}"
     state: absent
