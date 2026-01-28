@@ -56,6 +56,27 @@
   tags:
     - cuda
 
+- name: Unhold old CUDA packages
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  loop: "{{ cuda_hold_packages[cuda_old_version] }}"
+  when: cuda_old_version is defined
+  tags:
+    - cuda
+
+- name: Remove old CUDA packages
+  ansible.builtin.apt:
+    name: "{{ cuda_packages[cuda_old_version] }}"
+    state: absent
+    purge: true
+    autoremove: true
+    update_cache: false
+    force_apt_get: true
+  when: cuda_old_version is defined
+  tags:
+    - cuda
+
 - name: Install packages and related libraries for CUDA {{ cuda_version }}
   ansible.builtin.apt:
     name: "{{ cuda_packages[cuda_version] }}"

@@ -22,6 +22,7 @@
     dest: "/tmp/nccl-tests-perf-{{ ansible_architecture }}.tar.gz"
     mode: "0644"
     checksum: "{{ nccl_tests_sha_map[nccl_tests_cuda_version][nccl_tests_version][ansible_architecture] }}"
+  register: nccl_tests_dl
   tags:
     - nccl-tests
 
@@ -31,6 +32,7 @@
     dest: /usr/bin
     remote_src: true
     mode: "0755"
-    creates: /usr/bin/all_reduce_perf_mpi
+    creates: "{{ (nccl_tests_force | default(false)) | ternary(omit, '/usr/bin/all_reduce_perf_mpi') }}"
+  when: (nccl_tests_force | default(false) | bool) or nccl_tests_dl.changed
   tags:
     - nccl-tests
