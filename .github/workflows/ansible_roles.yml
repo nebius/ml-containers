@@ -1,0 +1,43 @@
+name: Ansible roles image build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      daytime: ${{ steps.set_daytime.outputs.daytime }}
+    steps:
+      - id: set_daytime
+        name: Compute shared DAYTIME
+        run: echo "daytime=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
+  build_and_push:
+    runs-on: [self-hosted, X64]
+    needs: prepare
+
+    name: Building image Ansible roles
+    env:
+      DAYTIME: ${{ needs.prepare.outputs.daytime }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Add docker-credential-nebius to PATH
+        run: echo "/home/ml_containers/.nebius/bin" >> $GITHUB_PATH
+
+      - name: Get image version name
+        run: echo "cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ env.DAYTIME }}"
+
+      - name: Build and push image
+        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ env.DAYTIME }} \
+            --target ansible_roles \
+            --progress=plain \
+            --push \
+            .
