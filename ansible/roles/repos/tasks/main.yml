@@ -19,9 +19,10 @@
     group: root
     mode: '0644'
   loop:
-    - nvidia-container-toolkit.list
-    - nebius-ubuntu.sources
     - nebius-ubuntu-security.sources
+    - nebius-ubuntu-updates.sources
+    - nebius-ubuntu.sources
+    - nvidia-container-toolkit.list
   tags:
     - nvidia-container-toolkit-repo
     - repos
