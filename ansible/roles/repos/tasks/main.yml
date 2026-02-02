@@ -143,35 +143,58 @@
     - openmpi-repo
     - repos
 
+- name: Build CUDA keyring URL
+  vars:
+    _distro: "ubuntu{{ ansible_distribution_version | replace('.', '') }}"
+    _arch: "{{ repos_cuda_dpkg_arch_map[ansible_architecture] }}"
+  ansible.builtin.set_fact:
+    repos_cuda_keyring_url: "https://developer.download.nvidia.com/compute/cuda/repos/{{ _distro }}/{{ _arch }}/cuda-keyring_1.1-1_all.deb"
+    repos_cuda_keyring_path: "/tmp/cuda-keyring_1.1-1_all.deb"
+  tags:
+    - repos
+    - cuda-repo
+
+- name: Check if CUDA keyring .deb already exists
+  ansible.builtin.stat:
+    path: "{{ repos_cuda_keyring_path }}"
+  register: repos_cuda_keyring_stat
+  tags:
+    - repos
+    - cuda-repo
+
+- name: Would download CUDA keyring (check-mode)
+  ansible.builtin.debug:
+    msg: "Would download {{ repos_cuda_keyring_url }} -> {{ repos_cuda_keyring_path }}"
+  when: ansible_check_mode and not repos_cuda_keyring_stat.stat.exists
+  tags:
+    - repos
+    - cuda-repo
+
+- name: Would install CUDA keyring (check-mode)
+  ansible.builtin.debug:
+    msg: "Would install {{ repos_cuda_keyring_path }}"
+  when: ansible_check_mode
+  tags:
+    - repos
+    - cuda-repo
+
 - name: Download NVIDIA CUDA keyring package
   ansible.builtin.get_url:
-    url: >-
-      {{
-        "https://developer.download.nvidia.com/compute/cuda/repos/"
-        ~ "ubuntu"
-        ~ (ansible_distribution_version | replace('.', ''))
-        ~ "/"
-        ~ repos_cuda_dpkg_arch_map[ansible_architecture]
-        ~ "/cuda-keyring_1.1-1_all.deb"
-      }}
-    dest: /tmp/cuda-keyring_1.1-1_all.deb
+    url: "{{ repos_cuda_keyring_url }}"
+    dest: "{{ repos_cuda_keyring_path }}"
     mode: "0644"
+    force: false
+    checksum: "sha256:d2a6b11c096396d868758b86dab1823b25e14d70333f1dfa74da5ddaf6a06dba"
+  when: not ansible_check_mode
   tags:
     - repos
     - cuda-repo
 
 - name: Install NVIDIA CUDA keyring package
   ansible.builtin.apt:
-    deb: /tmp/cuda-keyring_1.1-1_all.deb
+    deb: "{{ repos_cuda_keyring_path }}"
     state: present
-  tags:
-    - repos
-    - cuda-repo
-
-- name: Remove CUDA keyring .deb from /tmp
-  ansible.builtin.file:
-    path: /tmp/cuda-keyring_1.1-1_all.deb
-    state: absent
+  when: not ansible_check_mode
   tags:
     - repos
     - cuda-repo
