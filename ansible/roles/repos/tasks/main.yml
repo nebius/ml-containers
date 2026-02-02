@@ -185,7 +185,7 @@
     dest: "{{ repos_cuda_keyring_path }}"
     mode: "0644"
     force: false
-    checksum: "sha256:d2a6b11c096396d868758b86dab1823b25e14d70333f1dfa74da5ddaf6a06dba"
+    checksum: "{{ repos_cuda_sha256_map[ansible_architecture] }}"
   when: not ansible_check_mode
   tags:
     - repos

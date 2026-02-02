@@ -2,10 +2,10 @@
 
 repos_openmpi_version: 24.04-0.7.0.0
 
-repos_arch_map:
-  x86_64: amd64
-  aarch64: arm64
-
 repos_cuda_dpkg_arch_map:
   x86_64: x86_64
   aarch64: sbsa
+
+repos_cuda_sha256_map:
+  x86_64: "sha256:d2a6b11c096396d868758b86dab1823b25e14d70333f1dfa74da5ddaf6a06dba"
+  aarch64: "sha256:6ea7d2737648936820e85677177957a0f6521b840d98eb0bbae0a4f003fa7249"
