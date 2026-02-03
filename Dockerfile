@@ -1,6 +1,13 @@
 # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
 FROM cr.eu-north1.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
 
+######
+# Base Ubuntu image (Neubuntu as Nebius + Ubuntu) with modified repositories. It uses Nebius mirrors of the public Ubuntu
+# repositories to address network accessibility issues, and it also resolves the snapshot problem for
+# ARM packages (at the time of writing, Ubuntu does not support snapshots). The image additionally includes
+# public repositories for Docker, NVIDIA CUDA, nvtop, and OFED.
+######
+
 LABEL org.opencontainers.image.authors="Pavel Sofronii pavel.sofrony@nebius.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -89,10 +96,18 @@ RUN apt-get update && \
 #######################################################################################################################
 FROM base AS ansible_roles
 
+######
+# Image with all ansible roles from this repository
+######
+
 COPY ansible/ /opt/ansible/
 
 #######################################################################################################################
 FROM base AS slurm
+
+######
+# Image with preinstalled all slurm packages
+######
 
 # Install slurm client and divert files
 COPY ansible/slurm.yml /opt/ansible/slurm.yml
@@ -105,6 +120,16 @@ RUN ldconfig
 
 #######################################################################################################################
 FROM base AS cuda
+
+######
+# Base CUDA image with CUDA and mock packages for drivers.
+#
+# CUDA driver packages are required by various meta-packages, such as CUDA. However, in containerized
+# environments, drivers are not installed via traditional packages but through tools like
+# nvidia-container-toolkit or the k8s GPU Operator. When we mocking packages apt/dpkg thinking that
+# the driver is installed via standard packages. As a result, other packages that depend on the driver
+# as a dependency can be installed and used without issues.
+######
 
 ENV PATH=/usr/local/cuda/bin:${PATH}
 
@@ -132,6 +157,11 @@ ENV LIBRARY_PATH=/usr/local/cuda/lib64/stubs
 #######################################################################################################################
 FROM cuda AS training
 
+######
+# Minimal image for working with GPUs in distributed training. Essential tools (curl, wget, sudo, etc.),
+# NCCL (without tests), rdma-core, ibverbs-utils, numactl, OpenMPI & UCX, Python
+######
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       rdma-core="2404mlnx51-1.2404066" \
@@ -149,6 +179,10 @@ RUN cd /opt/ansible && \
 
 #######################################################################################################################
 FROM cuda AS fryer
+
+######
+# fryer binary build for different CUDA versions
+######
 
 ENV REPO_URL="https://github.com/huggingface/gpu-fryer"
 ENV TAG="v1.1.0"
@@ -171,6 +205,10 @@ RUN cargo build --release
 
 #######################################################################################################################
 FROM training AS training_diag
+
+######
+# Image for training and diagnostics with a specific tools
+######
 
 # Install dcgmi tools
 # https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
@@ -210,6 +248,10 @@ COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer
 
 #######################################################################################################################
 FROM training_diag AS slurm_training_diag
+
+######
+# CUDA Image for training and diagnostics with a slurm client
+######
 
 # Install slurm client and divert files
 COPY ansible/slurm-client.yml /opt/ansible/slurm-client.yml
