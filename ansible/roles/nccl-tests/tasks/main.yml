@@ -10,19 +10,68 @@
   tags:
     - nccl-tests
 
-- name: Download nccl-tests archive
-  ansible.builtin.get_url:
-    url: >-
+- name: Build nccl-tests URL and paths ({{ ansible_architecture }})
+  vars:
+    _arch: "{{ ansible_architecture }}"
+    _distro: "{{ ansible_distribution_version }}"
+    _parts:
+      - "{{ deb_repo_download_url | regex_replace('/+$', '') }}"
+      - "nccl_tests_{{ nccl_tests_cuda_version }}_ubuntu{{ _distro }}"
+      - "nccl-tests-perf-{{ _arch }}.tar.gz"
+  ansible.builtin.set_fact:
+    nccl_tests_url: "{{ _parts | join('/') }}"
+    nccl_tests_path: "/tmp/nccl-tests-perf-{{ _arch }}.tar.gz"
+    nccl_tests_sha_hex: >-
       {{
-        deb_repo_download_url ~
-        '/nccl_tests_' ~ nccl_tests_cuda_version ~
-        '_ubuntu' ~ ansible_distribution_version ~
-        '/nccl-tests-perf-' ~ ansible_architecture ~ '.tar.gz'
+        nccl_tests_sha_map[nccl_tests_cuda_version][nccl_tests_version][_arch]
+        | regex_replace('^sha256:', '')
       }}
-    dest: "/tmp/nccl-tests-perf-{{ ansible_architecture }}.tar.gz"
+  tags:
+    - nccl-tests
+
+- name: Stat nccl-tests archive with sha256
+  ansible.builtin.stat:
+    path: "{{ nccl_tests_path }}"
+    checksum_algorithm: sha256
+  register: nccl_tests_stat
+  tags:
+    - nccl-tests
+
+- name: PLAN — would (re)download nccl-tests (check-mode)
+  ansible.builtin.debug:
+    msg: >-
+      Would download {{ nccl_tests_url }} -> {{ nccl_tests_path }}
+      (current={{ nccl_tests_stat.stat.checksum | default('absent') }},
+       want={{ nccl_tests_sha_hex }})
+  when: ansible_check_mode and (
+    (not nccl_tests_stat.stat.exists) or
+    (nccl_tests_stat.stat.checksum != nccl_tests_sha_hex)
+    )
+  changed_when: false
+  tags:
+    - nccl-tests
+
+- name: Download nccl-tests archive when missing or wrong
+  ansible.builtin.get_url:
+    url: "{{ nccl_tests_url }}"
+    dest: "{{ nccl_tests_path }}"
     mode: "0644"
-    checksum: "{{ nccl_tests_sha_map[nccl_tests_cuda_version][nccl_tests_version][ansible_architecture] }}"
+    checksum: "sha256:{{ nccl_tests_sha_hex }}"
+    force: false
+  when: (not ansible_check_mode) and (
+    (not nccl_tests_stat.stat.exists) or
+    (nccl_tests_stat.stat.checksum != nccl_tests_sha_hex)
+    )
   register: nccl_tests_dl
+  tags:
+    - nccl-tests
+
+- name: Nccl-tests archive already up-to-date
+  ansible.builtin.debug:
+    msg: "Archive OK: {{ nccl_tests_path }}"
+  when: nccl_tests_stat.stat.exists and
+    (nccl_tests_stat.stat.checksum == nccl_tests_sha_hex)
+  changed_when: false
   tags:
     - nccl-tests
 

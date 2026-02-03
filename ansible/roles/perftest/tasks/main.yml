@@ -9,19 +9,68 @@
   tags:
     - perftest
 
-- name: Download perftest archive
-  ansible.builtin.get_url:
-    url: >-
+- name: Build perftest URL and paths (lint-safe)
+  vars:
+    _arch: "{{ ansible_architecture }}"
+    _distro: "{{ ansible_distribution_version }}"
+    _parts:
+      - "{{ deb_repo_download_url | regex_replace('/+$', '') }}"
+      - "perftest_{{ perftest_cuda_version }}_ubuntu{{ _distro }}"
+      - "perftest-{{ _arch }}.tar.gz"
+  ansible.builtin.set_fact:
+    perftest_url: "{{ _parts | join('/') }}"
+    perftest_path: "/tmp/perftest-{{ _arch }}.tar.gz"
+    perftest_sha_hex: >-
       {{
-        deb_repo_download_url ~
-        '/perftest_' ~ perftest_cuda_version ~
-        '_ubuntu' ~ ansible_distribution_version ~
-        '/perftest-' ~ ansible_architecture ~ '.tar.gz'
+        perftest_sha_map[perftest_cuda_version][_arch]
+        | regex_replace('^sha256:', '')
       }}
-    dest: "/tmp/perftest-{{ ansible_architecture }}.tar.gz"
+  tags:
+    - perftest
+
+- name: Stat perftest archive with sha256
+  ansible.builtin.stat:
+    path: "{{ perftest_path }}"
+    checksum_algorithm: sha256
+  register: perftest_stat
+  tags:
+    - perftest
+
+- name: PLAN — would (re)download perftest (check-mode)
+  ansible.builtin.debug:
+    msg: >-
+      Would download {{ perftest_url }} -> {{ perftest_path }}
+      (current={{ perftest_stat.stat.checksum | default('absent') }},
+       want={{ perftest_sha_hex }})
+  when: ansible_check_mode and (
+    (not perftest_stat.stat.exists) or
+    (perftest_stat.stat.checksum != perftest_sha_hex)
+    )
+  changed_when: false
+  tags:
+    - perftest
+
+- name: Download perftest archive when missing or wrong
+  ansible.builtin.get_url:
+    url: "{{ perftest_url }}"
+    dest: "{{ perftest_path }}"
     mode: "0644"
-    checksum: "{{ perftest_sha_map[perftest_cuda_version][ansible_architecture] }}"
+    checksum: "sha256:{{ perftest_sha_hex }}"
+    force: false
+  when: (not ansible_check_mode) and (
+    (not perftest_stat.stat.exists) or
+    (perftest_stat.stat.checksum != perftest_sha_hex)
+    )
   register: perftest_dl
+  tags:
+    - perftest
+
+- name: Perftest archive already up-to-date
+  ansible.builtin.debug:
+    msg: "Archive OK: {{ perftest_path }}"
+  when: perftest_stat.stat.exists and
+    (perftest_stat.stat.checksum == perftest_sha_hex)
+  changed_when: false
   tags:
     - perftest
 

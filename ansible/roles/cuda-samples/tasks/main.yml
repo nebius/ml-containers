@@ -9,19 +9,61 @@
   tags:
     - cuda-samples
 
-- name: Download cuda-samples archive
+- name: Build cuda-samples vars
+  vars:
+    _arch: "{{ ansible_architecture }}"
+    _distro: "{{ ansible_distribution_version }}"
+  ansible.builtin.set_fact:
+    cuda_samples_url: "{{ '%s/cuda_samples_%s_ubuntu%s/cuda-samples-%s.tar.gz'
+                          | format(deb_repo_download_url, cuda_samples_cuda_version, _distro, _arch) }}"
+    cuda_samples_path: "/tmp/cuda-samples-{{ _arch }}.tar.gz"
+    cuda_samples_sha_hex: "{{ cuda_samples_sha_map[cuda_samples_cuda_version][_arch]
+                              | regex_replace('^sha256:', '') }}"
+  tags:
+    - cuda-samples
+
+- name: Stat cuda-samples local archive (with sha256)
+  ansible.builtin.stat:
+    path: "{{ cuda_samples_path }}"
+    checksum_algorithm: sha256
+  register: cuda_samples_stat
+  tags:
+    - cuda-samples
+
+- name: PLAN — would (re)download cuda-samples (check-mode)
+  ansible.builtin.debug:
+    msg: >-
+      Would download {{ cuda_samples_url }} -> {{ cuda_samples_path }}
+      (current={{ cuda_samples_stat.stat.checksum | default('absent') }},
+       want={{ cuda_samples_sha_hex }})
+  when: ansible_check_mode and (
+    (not cuda_samples_stat.stat.exists) or
+    (cuda_samples_stat.stat.checksum != cuda_samples_sha_hex)
+    )
+  changed_when: false
+  tags:
+    - cuda-samples
+
+- name: Download cuda-samples archive when missing or wrong
   ansible.builtin.get_url:
-    url: >-
-      {{
-        deb_repo_download_url ~
-        '/cuda_samples_' ~ cuda_samples_cuda_version ~
-        '_ubuntu' ~ ansible_distribution_version ~
-        '/cuda-samples-' ~ ansible_architecture ~ '.tar.gz'
-      }}
-    dest: "/tmp/cuda-samples-{{ ansible_architecture }}.tar.gz"
+    url: "{{ cuda_samples_url }}"
+    dest: "{{ cuda_samples_path }}"
     mode: "0644"
-    checksum: "{{ cuda_samples_sha_map[cuda_samples_cuda_version][ansible_architecture] }}"
+    checksum: "sha256:{{ cuda_samples_sha_hex }}"
+    force: false
+  when: (not ansible_check_mode) and (
+    (not cuda_samples_stat.stat.exists) or
+    (cuda_samples_stat.stat.checksum != cuda_samples_sha_hex)
+    )
   register: cuda_samples_dl
+  tags:
+    - cuda-samples
+
+- name: Archive already present and correct
+  ansible.builtin.debug:
+    msg: "Archive already up-to-date: {{ cuda_samples_path }}"
+  when: cuda_samples_stat.stat.exists and (cuda_samples_stat.stat.checksum == cuda_samples_sha_hex)
+  changed_when: false
   tags:
     - cuda-samples
 
