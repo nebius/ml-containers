@@ -23,6 +23,7 @@ RUN apt-get update && \
 # Add Nebius Ubuntu mirrors
 COPY ansible/roles/repos/files/nebius-ubuntu.sources /etc/apt/sources.list.d/nebius-ubuntu.sources
 COPY ansible/roles/repos/files/nebius-ubuntu-security.sources /etc/apt/sources.list.d/nebius-ubuntu-security.sources
+COPY ansible/roles/repos/files/nebius-ubuntu-updates.sources /etc/apt/sources.list.d/nebius-ubuntu-updates.sources
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \

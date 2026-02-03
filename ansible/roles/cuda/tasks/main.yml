@@ -27,8 +27,6 @@
     path: /etc/default/locale
     regexp: "^LANG="
     line: "LANG=en_US.UTF-8"
-    mode: "0644"
-    create: true
   tags:
     - locale
     - cuda
