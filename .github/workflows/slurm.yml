@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - slurm_version: 25.05.5
+          - slurm_version: 25.11.2
 
     name: Building image with Slurm version ${{ matrix.slurm_version }}
     env:

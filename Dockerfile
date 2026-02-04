@@ -36,8 +36,7 @@ RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
       locales \
       tzdata \
-      wget \
-      curl && \
+      wget && \
     ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
     locale-gen en_US.UTF-8 && \
     dpkg-reconfigure locales tzdata && \
@@ -54,7 +53,9 @@ RUN apt-get update &&  \
         python3.12-venv="3.12.3-1ubuntu0.10"
 
 # Install Ansible and base configs
-COPY ansible/ansible.cfg ansible/requirements.txt ansible/inventory /opt/ansible/
+COPY ansible/ansible.cfg /opt/ansible/ansible.cfg
+COPY ansible/requirements.txt /opt/ansible/requirements.txt
+COPY ansible/inventory/ /opt/ansible/inventory/
 RUN cd /opt/ansible && /usr/bin/python3.12 -m venv .venv && \
     . .venv/bin/activate && pip install -r requirements.txt
 

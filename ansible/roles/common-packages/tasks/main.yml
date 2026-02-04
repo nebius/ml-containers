@@ -4,6 +4,7 @@
   ansible.builtin.apt:
     name: "{{ common_packages }}"
     state: present
+    allow_downgrade: true
     update_cache: true
   tags:
     - packages
