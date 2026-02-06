@@ -110,11 +110,14 @@ FROM base AS slurm
 # Image with preinstalled all slurm packages
 ######
 
+ARG SLURM_VERSION
+ENV SLURM_VERSION=$SLURM_VERSION
+
 # Install slurm client and divert files
 COPY ansible/slurm.yml /opt/ansible/slurm.yml
 COPY ansible/roles/slurm /opt/ansible/roles/slurm
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local slurm.yml
+    ansible-playbook -i inventory/ -c local slurm.yml -e "slurm_version=${SLURM_VERSION}"
 
 # Update linker cache
 RUN ldconfig

@@ -2,7 +2,6 @@
 
 deb_repo_download_url: "https://github.com/nebius/slurm-deb-packages/releases/download"
 
-slurm_version: 25.11.2
 slurm_packages:
   - slurm-smd
   - slurm-smd-client

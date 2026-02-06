@@ -1,5 +1,14 @@
 ---
 
+- name: Assert slurm_version
+  ansible.builtin.assert:
+    that:
+      - slurm_version is defined
+    fail_msg: Missing slurm_version variable.
+  tags:
+    - slurm
+    - slurm-packages
+
 # /var/spool/slurmd for bind-mounting it from the host. It's needed for sbatch to work
 - name: Create directories
   ansible.builtin.file:
