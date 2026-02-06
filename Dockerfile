@@ -230,7 +230,9 @@ RUN cd /opt/ansible && \
 
 # Download NCCL tests executables
 ARG CUDA_VERSION
+ENV CUDA_VERSION=$CUDA_VERSION
 ARG NCCL_TESTS_VERSION
+ENV NCCL_TESTS_VERSION=$NCCL_TESTS_VERSION
 COPY ansible/nccl-tests.yml /opt/ansible/nccl-tests.yml
 COPY ansible/roles/nccl-tests /opt/ansible/roles/nccl-tests
 RUN cd /opt/ansible && \
