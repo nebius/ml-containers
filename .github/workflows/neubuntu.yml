@@ -71,6 +71,7 @@ jobs:
           set -euo pipefail
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
           echo "Pushing single-arch: ${ARCH_TAG} (${{ matrix.platform }})"
+          
           docker buildx build \
             --platform "${{ matrix.platform }}" \
             -t "${ARCH_TAG}" \

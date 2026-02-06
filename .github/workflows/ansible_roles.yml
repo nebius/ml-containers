@@ -8,36 +8,122 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       daytime: ${{ steps.set_daytime.outputs.daytime }}
+      image: ${{ steps.set_image.outputs.image }}
     steps:
       - id: set_daytime
         name: Compute shared DAYTIME
         run: echo "daytime=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
 
-  build_and_push:
-    runs-on: [self-hosted, X64]
-    needs: prepare
+      - id: set_image
+        name: Set base image name
+        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
+        run: echo "image=cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ steps.set_daytime.outputs.daytime }}" >> "$GITHUB_OUTPUT"
 
-    name: Building image Ansible roles
+  build_single_arch:
+    name: ${{ matrix.arch }} build
+    needs: prepare
+    runs-on: ${{ matrix.runner }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+
     env:
-      DAYTIME: ${{ needs.prepare.outputs.daytime }}
+      IMAGE: ${{ needs.prepare.outputs.image }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Add docker-credential-nebius to PATH
-        run: echo "/home/ml_containers/.nebius/bin" >> $GITHUB_PATH
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - name: Get image version name
-        run: echo "cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ env.DAYTIME }}"
-
-      - name: Build and push image
-        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
+      - name: Install Nebius CLI
+        shell: bash
         run: |
+          set -euo pipefail
+          curl -sSL https://storage.eu-north1.nebius.cloud/cli/install.sh | bash
+          echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Nebius config
+        shell: bash
+        run: |
+          set -euo pipefail
+          nebius version
+          mkdir -p "$HOME/.nebius"
+          echo "${{ secrets.NEBIUS_CONFIG_YAML_B64 }}" | base64 -d > "$HOME/.nebius/config.yaml"
+          chmod 600 "$HOME/.nebius/config.yaml"
+
+      - name: Configure Nebius docker credential-helper for auth
+        shell: bash
+        run: nebius registry configure-helper
+
+      - name: Build and push single-arch image
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
+          echo "Pushing single-arch: ${ARCH_TAG} (${{ matrix.platform }})"
+
           docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            -t cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ env.DAYTIME }} \
+            --platform "${{ matrix.platform }}" \
+            -t "${ARCH_TAG}" \
             --target ansible_roles \
             --progress=plain \
             --push \
             .
+
+  create_manifest:
+    name: Create & push multi-arch manifest
+    needs: [prepare, build_single_arch]
+    runs-on: ubuntu-24.04
+
+    env:
+      IMAGE: ${{ needs.prepare.outputs.image }}
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Install Nebius CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -sSL https://storage.eu-north1.nebius.cloud/cli/install.sh | bash
+          echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Nebius config
+        shell: bash
+        run: |
+          set -euo pipefail
+          nebius version
+          mkdir -p "$HOME/.nebius"
+          echo "${{ secrets.NEBIUS_CONFIG_YAML_B64 }}" | base64 -d > "$HOME/.nebius/config.yaml"
+          chmod 600 "$HOME/.nebius/config.yaml"
+
+      - name: Configure Nebius docker credential-helper for auth
+        shell: bash
+        run: nebius registry configure-helper
+
+      - name: Create and push manifest list
+        shell: bash
+        run: |
+          set -euo pipefail
+          AMD="${IMAGE}-amd64"
+          ARM="${IMAGE}-arm64"
+
+          echo "Creating multi-arch manifest: ${IMAGE}"
+          echo "  - ${AMD}"
+          echo "  - ${ARM}"
+
+          docker buildx imagetools create \
+            -t "${IMAGE}" \
+            "${AMD}" \
+            "${ARM}"
