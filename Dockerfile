@@ -260,9 +260,12 @@ FROM training_diag AS slurm_training_diag
 # CUDA Image for training and diagnostics with a slurm client
 ######
 
+ARG SLURM_VERSION
+ENV SLURM_VERSION=$SLURM_VERSION
+
 # Install slurm client and divert files
 COPY ansible/slurm-client.yml /opt/ansible/slurm-client.yml
 COPY ansible/roles/slurm-client /opt/ansible/roles/slurm-client
 COPY ansible/roles/slurm-divert /opt/ansible/roles/slurm-divert
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local slurm-client.yml
+    ansible-playbook -i inventory/ -c local slurm-client.yml -e "slurm_version=${SLURM_VERSION}"
