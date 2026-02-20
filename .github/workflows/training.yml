@@ -69,8 +69,9 @@ jobs:
           set -euo pipefail
           IMAGE="${IMAGE_BASE}:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${DAYTIME}"
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
+          CACHE_REF="${IMAGE_BASE}:${{ matrix.cuda_version }}-${{ matrix.ubuntu_version }}-${{ matrix.arch }}"
 
-          echo "Pushing: ${ARCH_TAG} (${{ matrix.platform }})"
+          echo "Pushing: ${ARCH_TAG} (${{ matrix.platform }}) with cache ${CACHE_REF}"
 
           docker buildx build \
             --platform "${{ matrix.platform }}" \
@@ -78,6 +79,8 @@ jobs:
             -t "${ARCH_TAG}" \
             --target training \
             --progress=plain \
+            --cache-from=type=registry,ref="${CACHE_REF}" \
+            --cache-to=type=registry,ref="${CACHE_REF}",mode=max \
             --push \
             .
 
