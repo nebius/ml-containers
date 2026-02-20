@@ -68,7 +68,7 @@ jobs:
           set -euo pipefail
           IMAGE="${IMAGE_BASE}:${{ matrix.slurm_version }}-${DAYTIME}"
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
-          CACHE_REF="${IMAGE_BASE}:${{ matrix.slurm_version }}--${{ matrix.arch }}"
+          CACHE_REF="${IMAGE_BASE}:${{ matrix.slurm_version }}-${{ matrix.arch }}"
 
           echo "Pushing: ${ARCH_TAG} (${{matrix.platform}}) with cache ${CACHE_REF}"
 

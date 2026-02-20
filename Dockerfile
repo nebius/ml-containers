@@ -149,6 +149,8 @@ RUN chmod +x /opt/bin/install_driver_mocks.sh && \
 
 ARG CUDA_VERSION
 ENV CUDA_VERSION=$CUDA_VERSION
+ARG NVIDIA_REQUIRE_CUDA
+ENV NVIDIA_REQUIRE_CUDA=$NVIDIA_REQUIRE_CUDA
 
 # Install, hold and pin CUDA packages
 # About CUDA packages https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#meta-packages
