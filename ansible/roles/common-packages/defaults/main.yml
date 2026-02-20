@@ -37,7 +37,7 @@ common_packages:
   - iproute2=6.1.0-1ubuntu6.2
   - libhwloc-dev=2.10.0-1build1
   - libjson-c-dev=0.17-1build1
-  - libmunge-dev=0.5.15-4build1
+  - libmunge-dev=0.5.15-4ubuntu0.1
   - libncurses-dev=6.4+20240113-1ubuntu2
   - libpmix2t64=5.0.1-4.1build1
 
