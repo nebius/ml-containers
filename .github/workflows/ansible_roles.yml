@@ -70,13 +70,18 @@ jobs:
         run: |
           set -euo pipefail
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
-          echo "Pushing single-arch: ${ARCH_TAG} (${{ matrix.platform }})"
+          
+          CACHE_REF="cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ matrix.arch }}"
+
+          echo "Pushing ${ARCH_TAG} (${{ matrix.platform }}) with cache ${CACHE_REF}"
 
           docker buildx build \
             --platform "${{ matrix.platform }}" \
             -t "${ARCH_TAG}" \
             --target ansible_roles \
             --progress=plain \
+            --cache-from=type=registry,ref="${CACHE_REF}" \
+            --cache-to=type=registry,ref="${CACHE_REF}",mode=max \
             --push \
             .
 
