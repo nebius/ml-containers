@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slurm_version: ["25.05.6", "25.11.2"]
+        slurm_version: ["25.05.6", "25.11.3"]
         arch: ["amd64", "arm64"]
         include:
           - arch: amd64
@@ -91,7 +91,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slurm_version: ["25.05.6", "25.11.2"]
+        slurm_version: ["25.05.6", "25.11.3"]
 
     env:
       DAYTIME: ${{ needs.prepare.outputs.daytime }}
