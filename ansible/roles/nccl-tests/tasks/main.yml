@@ -16,7 +16,7 @@
     _distro: "{{ ansible_distribution_version }}"
     _parts:
       - "{{ deb_repo_download_url | regex_replace('/+$', '') }}"
-      - "nccl_tests_{{ nccl_tests_cuda_version }}_ubuntu{{ _distro }}"
+      - "nccl_tests_{{ nccl_tests_version }}_cuda{{ nccl_tests_cuda_version }}_ubuntu{{ _distro }}"
       - "nccl-tests-perf-{{ _arch }}.tar.gz"
   ansible.builtin.set_fact:
     nccl_tests_url: "{{ _parts | join('/') }}"
