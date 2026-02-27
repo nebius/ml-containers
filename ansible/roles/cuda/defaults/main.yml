@@ -15,8 +15,8 @@ cuda_packages:
     - "libcudnn9-cuda-13=9.15.0.58-1"
     - "libcudnn9-dev-cuda-13=9.15.0.58-1"
     - "libcudnn9-headers-cuda-13=9.15.0.58-1"
-    - "libnccl-dev=2.28.7-1+cuda13.0"
-    - "libnccl2=2.28.7-1+cuda13.0"
+    - "libnccl-dev=2.29.3-1+cuda13.0"
+    - "libnccl2=2.29.3-1+cuda13.0"
 
 cuda_hold_packages:
   "12.9.0":
@@ -104,11 +104,11 @@ cuda_pin_content:
     Pin-Priority: 1001
 
     Package: libnccl-dev
-    Pin: version 2.28.7-1+cuda13.0
+    Pin: version 2.29.3-1+cuda13.0
     Pin-Priority: 1001
 
     Package: libnccl2
-    Pin: version 2.28.7-1+cuda13.0
+    Pin: version 2.29.3-1+cuda13.0
     Pin-Priority: 1001
 
 cuda_dpkg_arch_map:
