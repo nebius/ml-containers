@@ -1,7 +1,9 @@
 ---
 
 - name: Install slurm packages
-  hosts: localhost
+  hosts:
+    - localhost
+    - all
   become: true
   gather_facts: true
   gather_subset:

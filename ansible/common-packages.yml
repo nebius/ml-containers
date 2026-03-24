@@ -1,7 +1,9 @@
 ---
 
 - name: Install common packages
-  hosts: localhost
+  hosts:
+    - localhost
+    - all
   gather_facts: true
   gather_subset:
     - min
