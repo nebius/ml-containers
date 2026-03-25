@@ -54,24 +54,39 @@
   tags:
     - cuda
 
-- name: Unhold old CUDA packages
-  ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
-    selection: install
-  loop: "{{ cuda_hold_packages[cuda_old_version] }}"
-  when: cuda_old_version is defined
+- name: Get held packages
+  ansible.builtin.command: apt-mark showhold
+  register: cuda_apt_hold
+  changed_when: false
+  check_mode: false
+  when: cuda_force_upgrade | default(false) | bool
+  tags:
+    - cuda
+
+- name: Unhold only held CUDA packages
+  ansible.builtin.command: "apt-mark unhold {{ item }}"
+  loop: >-
+    {{
+      cuda_apt_hold.stdout_lines
+      | intersect(cuda_hold_packages | dict2items | map(attribute='value') | flatten | unique)
+    }}
+  register: cuda_unhold_out
+  changed_when: "'Canceled hold on' in (unhold_out.stdout | default(''))"
+  failed_when: cuda_unhold_out.rc != 0
+  when: cuda_force_upgrade | default(false) | bool
   tags:
     - cuda
 
 - name: Remove old CUDA packages
   ansible.builtin.apt:
-    name: "{{ cuda_packages[cuda_old_version] }}"
+    name: "{{ cuda_hold_packages | dict2items | map(attribute='value') | flatten | unique }}"
     state: absent
     purge: true
     autoremove: true
     update_cache: false
     force_apt_get: true
-  when: cuda_old_version is defined
+    allow_change_held_packages: true
+  when: cuda_force_upgrade | default(false) | bool
   tags:
     - cuda
 
