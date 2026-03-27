@@ -4,4 +4,4 @@
 #
 
 # [mlnx_ofed_{{ repos_openmpi_version }}_base]
-deb http://linux.mellanox.com/public/repo/mlnx_ofed/{{ repos_openmpi_version }}/ubuntu{{ ansible_distribution_version }}/$(ARCH) ./
+deb http://linux.mellanox.com/public/repo/mlnx_ofed/{{ repos_openmpi_version }}/ubuntu{{ ansible_facts['distribution_version'] }}/$(ARCH) ./
