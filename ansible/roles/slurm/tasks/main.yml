@@ -38,9 +38,9 @@
     - slurm
     - slurm-packages
 
-- name: "Find all Slurm plugin files for architecture - {{ ansible_architecture }}"
+- name: "Find all Slurm plugin files for architecture - {{ ansible_facts['architecture'] }}"
   ansible.builtin.find:
-    paths: "/usr/lib/{{ ansible_architecture }}-linux-gnu/slurm"
+    paths: "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu/slurm"
     file_type: any
   register: slurm_plugins
   tags:

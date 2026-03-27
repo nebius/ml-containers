@@ -10,10 +10,10 @@
   tags:
     - nccl-tests
 
-- name: Build nccl-tests URL and paths ({{ ansible_architecture }})
+- name: Build nccl-tests URL and paths ({{ ansible_facts['architecture'] }})
   vars:
-    _arch: "{{ ansible_architecture }}"
-    _distro: "{{ ansible_distribution_version }}"
+    _arch: "{{ ansible_facts['architecture'] }}"
+    _distro: "{{ ansible_facts['distribution_version'] }}"
     _parts:
       - "{{ deb_repo_download_url | regex_replace('/+$', '') }}"
       - "nccl_tests_{{ nccl_tests_version }}_cuda{{ nccl_tests_cuda_version }}_ubuntu{{ _distro }}"
@@ -77,7 +77,7 @@
 
 - name: Extract nccl-tests archive into /usr/bin
   ansible.builtin.unarchive:
-    src: "/tmp/nccl-tests-perf-{{ ansible_architecture }}.tar.gz"
+    src: "/tmp/nccl-tests-perf-{{ ansible_facts['architecture'] }}.tar.gz"
     dest: /usr/bin
     remote_src: true
     mode: "0755"

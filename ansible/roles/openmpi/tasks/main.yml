@@ -25,9 +25,9 @@
   ansible.builtin.copy:
     dest: /etc/ld.so.conf.d/openmpi.conf
     content: |
-      /lib/{{ ansible_architecture }}-linux-gnu
-      /usr/lib/{{ ansible_architecture }}-linux-gnu
-      /usr/local/cuda/targets/{{ ansible_architecture }}-linux/lib
+      /lib/{{ ansible_facts['architecture'] }}-linux-gnu
+      /usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu
+      /usr/local/cuda/targets/{{ ansible_facts['architecture'] }}-linux/lib
       /usr/mpi/gcc/openmpi-{{ openmpi_version_short }}/lib
     owner: root
     group: root

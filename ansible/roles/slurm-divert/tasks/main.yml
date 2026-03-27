@@ -2,7 +2,7 @@
 
 - name: Find all Slurm plugin files for this architecture
   ansible.builtin.find:
-    paths: "/usr/lib/{{ ansible_architecture }}-linux-gnu/slurm"
+    paths: "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu/slurm"
     file_type: any
   register: slurm_plugins
   tags:
@@ -11,9 +11,9 @@
 - name: Define files to exclude
   ansible.builtin.set_fact:
     slurm_exclude:
-      - "/usr/lib/{{ ansible_architecture }}-linux-gnu/slurm/spank_pyxis.so"
-      - "/usr/lib/{{ ansible_architecture }}-linux-gnu/slurm/spanknccldebug.so"
-      - "/usr/lib/{{ ansible_architecture }}-linux-gnu/slurm/chroot.so"
+      - "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu/slurm/spank_pyxis.so"
+      - "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu/slurm/spanknccldebug.so"
+      - "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu/slurm/chroot.so"
   tags:
     - slurm-divert
 
@@ -43,14 +43,14 @@
     rename: false
     holder: LOCAL
   loop:
-    - "/usr/lib/{{ ansible_architecture }}-linux-gnu/libnss_slurm.so.2"
+    - "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu/libnss_slurm.so.2"
     - /usr/share/bash-completion/completions/slurm_completion.sh
   tags:
     - slurm-divert
 
 - name: Find actual libslurm.so.* shared object (not symlink)
   ansible.builtin.find:
-    paths: "/usr/lib/{{ ansible_architecture }}-linux-gnu"
+    paths: "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu"
     patterns: "libslurm.so.*.0.0"
     file_type: file
   register: slurm_libslurm_so_file

@@ -42,7 +42,7 @@
   ansible.builtin.copy:
     dest: /etc/apt/sources.list.d/nebius.list
     content: |
-      deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ {{ ansible_distribution_release }} main
+      deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ {{ ansible_facts['distribution_release'] }} main
       deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ stable main
     owner: root
     group: root
@@ -66,7 +66,7 @@
     name: docker
     types: [deb]
     uris: https://download.docker.com/linux/ubuntu
-    suites: ["{{ ansible_distribution_release }}"]
+    suites: ["{{ ansible_facts['distribution_release'] }}"]
     components: [stable]
     signed_by: /etc/apt/keyrings/docker.asc
     state: present
@@ -105,8 +105,8 @@
 
 - name: Build CUDA keyring URL
   vars:
-    _distro: "ubuntu{{ ansible_distribution_version | replace('.', '') }}"
-    _arch: "{{ repos_cuda_dpkg_arch_map[ansible_architecture] }}"
+    _distro: "ubuntu{{ ansible_facts['distribution_version'] | replace('.', '') }}"
+    _arch: "{{ repos_cuda_dpkg_arch_map[ansible_facts['architecture']] }}"
   ansible.builtin.set_fact:
     repos_cuda_keyring_url: "https://developer.download.nvidia.com/compute/cuda/repos/{{ _distro }}/{{ _arch }}/cuda-keyring_1.1-1_all.deb"
     repos_cuda_keyring_path: "/tmp/cuda-keyring_1.1-1_all.deb"
@@ -144,7 +144,7 @@
     dest: "{{ repos_cuda_keyring_path }}"
     mode: "0644"
     force: false
-    checksum: "{{ repos_cuda_sha256_map[ansible_architecture] }}"
+    checksum: "{{ repos_cuda_sha256_map[ansible_facts['architecture']] }}"
   when: not ansible_check_mode
   tags:
     - repos

@@ -11,8 +11,8 @@
 
 - name: Build cuda-samples vars
   vars:
-    _arch: "{{ ansible_architecture }}"
-    _distro: "{{ ansible_distribution_version }}"
+    _arch: "{{ ansible_facts['architecture'] }}"
+    _distro: "{{ ansible_facts['distribution_version'] }}"
   ansible.builtin.set_fact:
     cuda_samples_url: "{{ '%s/cuda_samples_%s_ubuntu%s/cuda-samples-%s.tar.gz'
                           | format(deb_repo_download_url, cuda_samples_cuda_version, _distro, _arch) }}"
@@ -69,7 +69,7 @@
 
 - name: Extract cuda-samples archive into /usr/bin
   ansible.builtin.unarchive:
-    src: "/tmp/cuda-samples-{{ ansible_architecture }}.tar.gz"
+    src: "/tmp/cuda-samples-{{ ansible_facts['architecture'] }}.tar.gz"
     dest: /usr/bin
     remote_src: true
     mode: "0755"
