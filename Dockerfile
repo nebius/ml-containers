@@ -141,11 +141,13 @@ ENV PATH=/usr/local/cuda/bin:${PATH}
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
-# Install mock packages for NVIDIA drivers
+# Install mock packages for NVIDIA drivers and libs
 COPY cuda/scripts/install_driver_mocks.sh /opt/bin/
-RUN chmod +x /opt/bin/install_driver_mocks.sh && \
+COPY cuda/scripts/install_libnvidia_ml_mock.sh /opt/bin/
+RUN chmod +x /opt/bin/install_*.sh && \
     /opt/bin/install_driver_mocks.sh && \
-    rm /opt/bin/install_driver_mocks.sh
+    /opt/bin/install_libnvidia_ml_mock.sh && \
+    rm -f /opt/bin/install_*.sh
 
 ARG CUDA_VERSION
 ENV CUDA_VERSION=$CUDA_VERSION

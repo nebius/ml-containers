@@ -13,6 +13,12 @@ set -e
 driver_packages=(
   cuda-drivers
   nvidia-open
+  libnvidia-compute-460
+  libnvidia-compute-465
+  libnvidia-compute-470
+  libnvidia-compute-510
+  libnvidia-compute-515
+  libnvidia-compute-520
   libnvidia-compute-525
   libnvidia-compute-530
   libnvidia-compute-535
@@ -27,6 +33,9 @@ driver_packages=(
   libnvidia-compute-585
   libnvidia-compute-590
   libnvidia-compute-595
+  libnvidia-compute-460-server
+  libnvidia-compute-470-server
+  libnvidia-compute-515-server
   libnvidia-compute-525-server
   libnvidia-compute-530-server
   libnvidia-compute-535-server
