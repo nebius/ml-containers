@@ -1,0 +1,13 @@
+---
+
+nccl_inspector_package_map:
+  "12.9.0":
+    package_version: "2.30.3-1+cuda12.9-1"
+    nccl_version: "2.30.3-1+cuda12.9"
+  "13.0.2":
+    package_version: "2.30.4-1+cuda13.0-1"
+    nccl_version: "2.30.4-1+cuda13.0"
+
+nccl_inspector_pin_path: /etc/apt/preferences.d/nccl-inspector-pins
+nccl_inspector_hold_packages:
+  - libnccl-profiler-inspector

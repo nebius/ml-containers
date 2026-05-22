@@ -1,0 +1,71 @@
+---
+
+- name: Assert nccl_inspector_cuda_version is supported
+  ansible.builtin.assert:
+    that:
+      - nccl_inspector_cuda_version is defined
+      - nccl_inspector_package_map[nccl_inspector_cuda_version] is defined
+    fail_msg: >-
+      Unsupported or missing nccl_inspector_cuda_version '{{ nccl_inspector_cuda_version | default('') }}'.
+      Available: {{ nccl_inspector_package_map.keys() | list | join(', ') }}
+  tags:
+    - nccl-inspector
+
+- name: Set NCCL Inspector package facts
+  ansible.builtin.set_fact:
+    nccl_inspector_package_version: "{{ nccl_inspector_package_map[nccl_inspector_cuda_version].package_version }}"
+    nccl_inspector_required_nccl_version: "{{ nccl_inspector_package_map[nccl_inspector_cuda_version].nccl_version }}"
+  tags:
+    - nccl-inspector
+
+- name: Query installed NCCL runtime version
+  ansible.builtin.command: "dpkg-query -W -f=${Version} libnccl2"
+  register: nccl_inspector_libnccl2_query
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  tags:
+    - nccl-inspector
+
+- name: Assert installed NCCL runtime matches NCCL Inspector
+  ansible.builtin.assert:
+    that:
+      - nccl_inspector_libnccl2_query.rc == 0
+      - nccl_inspector_libnccl2_query.stdout == nccl_inspector_required_nccl_version
+    fail_msg: >-
+      NCCL Inspector {{ nccl_inspector_package_version }} requires libnccl2
+      {{ nccl_inspector_required_nccl_version }}, but installed libnccl2 is
+      {{ nccl_inspector_libnccl2_query.stdout | default('missing') }}.
+  tags:
+    - nccl-inspector
+
+- name: Pin NCCL Inspector package
+  ansible.builtin.copy:
+    dest: "{{ nccl_inspector_pin_path }}"
+    content: |
+      Package: libnccl-profiler-inspector
+      Pin: version {{ nccl_inspector_package_version }}
+      Pin-Priority: 1001
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - nccl-inspector
+
+- name: Install NCCL Inspector package
+  ansible.builtin.apt:
+    name: "libnccl-profiler-inspector={{ nccl_inspector_package_version }}"
+    state: present
+    update_cache: true
+  tags:
+    - nccl-inspector
+
+- name: Hold NCCL Inspector package
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ nccl_inspector_hold_packages }}"
+  loop_control:
+    label: "{{ item }}"
+  tags:
+    - nccl-inspector

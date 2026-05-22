@@ -219,6 +219,16 @@ FROM training AS training_diag
 # Image for training and diagnostics with a specific tools
 ######
 
+ARG CUDA_VERSION
+ENV CUDA_VERSION=$CUDA_VERSION
+
+# Install NCCL Inspector profiler plugin
+COPY ansible/nccl-inspector.yml /opt/ansible/nccl-inspector.yml
+COPY ansible/roles/nccl-inspector /opt/ansible/roles/nccl-inspector
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local nccl-inspector.yml \
+    -e "nccl_inspector_cuda_version=${CUDA_VERSION}"
+
 # Install dcgmi tools
 # https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/dcgm-diagnostics.html
 COPY ansible/dcgmi.yml /opt/ansible/dcgmi.yml
