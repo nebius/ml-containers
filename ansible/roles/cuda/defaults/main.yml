@@ -3,8 +3,7 @@
 cuda_packages:
   "12.9.0":
     - "cuda=12.9.0-1"
-    - "cuda-libraries-dev-12-9=12.9.1-1"
-    - "libcublas-dev-12-9=12.9.1.4-1"
+    - "libcublas-dev-12-9=12.9.2.10-1"
     - "libcudnn9-cuda-12=9.10.1.4-1"
     - "libcudnn9-dev-cuda-12=9.10.1.4-1"
     - "libcudnn9-headers-cuda-12=9.10.1.4-1"
@@ -50,13 +49,9 @@ cuda_pin_content:
     Package: cuda
     Pin: version 12.9.0-1
     Pin-Priority: 1001
-    
-    Package: cuda-libraries-dev-12-9
-    Pin: version 12.9.1-1
-    Pin-Priority: 1001
 
     Package: libcublas-dev-12-9
-    Pin: version 12.9.1.4-1
+    Pin: version 12.9.2.10-1
     Pin-Priority: 1001
 
     Package: libcudnn9-cuda-12
