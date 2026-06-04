@@ -3,7 +3,7 @@
 cuda_packages:
   "12.9.0":
     - "cuda=12.9.0-1"
-    - "libcublas-dev-12-9"
+    - "libcublas-dev-12-9=12.9.2.10-1"
     - "libcudnn9-cuda-12=9.10.1.4-1"
     - "libcudnn9-dev-cuda-12=9.10.1.4-1"
     - "libcudnn9-headers-cuda-12=9.10.1.4-1"
@@ -15,8 +15,8 @@ cuda_packages:
     - "libcudnn9-cuda-13=9.15.0.58-1"
     - "libcudnn9-dev-cuda-13=9.15.0.58-1"
     - "libcudnn9-headers-cuda-13=9.15.0.58-1"
-    - "libnccl-dev=2.29.7-1+cuda13.0+fix-init-cpu-affinity1"
-    - "libnccl2=2.29.7-1+cuda13.0+fix-init-cpu-affinity1"
+    - "libnccl-dev=2.30.1-1+cuda13.0~custom1"
+    - "libnccl2=2.30.1-1+cuda13.0~custom1"
 
 cuda_hold_packages:
   "12.9.0":
@@ -51,7 +51,7 @@ cuda_pin_content:
     Pin-Priority: 1001
 
     Package: libcublas-dev-12-9
-    Pin: version 12.9.1.4-1
+    Pin: version 12.9.2.10-1
     Pin-Priority: 1001
 
     Package: libcudnn9-cuda-12
