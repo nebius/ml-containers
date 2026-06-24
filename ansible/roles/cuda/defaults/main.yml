@@ -36,6 +36,9 @@ cuda_hold_packages:
     - libnccl-dev
     - libnccl2
 
+cuda_force_remove_extra_packages:
+  - libnccl-profiler-inspector
+
 cuda_pin_content:
   "12.9.0": |
     Package: cuda-drivers
