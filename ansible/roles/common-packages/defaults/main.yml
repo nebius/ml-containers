@@ -1,5 +1,7 @@
 ---
 
+common_packages_force_reinstall: false
+
 common_packages:
   - acl=2.3.2-1build1.1
   - autoconf=2.71-3
@@ -15,8 +17,8 @@ common_packages:
   - liblz4-dev=1.9.4-1build1.1
   - libpam0g-dev=1.5.3-5ubuntu5.5
   - libpam0g=1.5.3-5ubuntu5.5
-  - libssl-dev=3.0.13-0ubuntu3.6
-  - libssl3t64=3.0.13-0ubuntu3.6
+  - libssl-dev=3.0.13-0ubuntu3.7
+  - libssl3t64=3.0.13-0ubuntu3.7
   - libtool=2.4.7-7build1
   - numactl=2.0.18-1build1
   - pkg-config=1.8.1-2build1

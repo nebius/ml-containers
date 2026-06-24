@@ -6,6 +6,59 @@
     state: present
     allow_downgrade: true
     update_cache: true
+  when: not (common_packages_force_reinstall | bool)
+  tags:
+    - packages
+    - common-packages
+
+- name: Update APT cache before forced common package reinstall
+  ansible.builtin.apt:
+    update_cache: true
+  when: common_packages_force_reinstall | bool
+  tags:
+    - packages
+    - common-packages
+
+- name: Plan forced common package reinstall
+  ansible.builtin.command:
+    argv: >-
+      {{
+        [
+          'apt-get',
+          '--simulate',
+          'install',
+          '--yes',
+          '--reinstall',
+          '--allow-downgrades',
+          '--allow-change-held-packages'
+        ] + common_packages
+      }}
+  changed_when: false
+  check_mode: false
+  when:
+    - common_packages_force_reinstall | bool
+    - ansible_check_mode
+  tags:
+    - packages
+    - common-packages
+
+- name: Reinstall required packages with dependency resolution
+  ansible.builtin.command:
+    argv: >-
+      {{
+        [
+          'apt-get',
+          'install',
+          '--yes',
+          '--reinstall',
+          '--allow-downgrades',
+          '--allow-change-held-packages'
+        ] + common_packages
+      }}
+  changed_when: true
+  when:
+    - common_packages_force_reinstall | bool
+    - not ansible_check_mode
   tags:
     - packages
     - common-packages

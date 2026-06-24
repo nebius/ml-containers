@@ -57,8 +57,25 @@
 - name: Get held packages
   ansible.builtin.command: apt-mark showhold
   register: cuda_apt_hold
-  changed_when: false
+  changed_when: 1 == 0
   check_mode: false
+  when: cuda_force_upgrade | default(false) | bool
+  tags:
+    - cuda
+
+- name: Build CUDA forced removal package list
+  ansible.builtin.set_fact:
+    cuda_force_remove_packages: >-
+      {{
+        (
+          cuda_hold_packages
+          | dict2items
+          | map(attribute='value')
+          | flatten
+          | list
+        )
+        | union(cuda_force_remove_extra_packages | default([]))
+      }}
   when: cuda_force_upgrade | default(false) | bool
   tags:
     - cuda
@@ -68,10 +85,10 @@
   loop: >-
     {{
       cuda_apt_hold.stdout_lines
-      | intersect(cuda_hold_packages | dict2items | map(attribute='value') | flatten | unique)
+      | intersect(cuda_force_remove_packages)
     }}
   register: cuda_unhold_out
-  changed_when: "'Canceled hold on' in (unhold_out.stdout | default(''))"
+  changed_when: cuda_unhold_out.stdout is search("Canceled hold on")
   failed_when: cuda_unhold_out.rc != 0
   when: cuda_force_upgrade | default(false) | bool
   tags:
@@ -79,7 +96,7 @@
 
 - name: Remove old CUDA packages
   ansible.builtin.apt:
-    name: "{{ cuda_hold_packages | dict2items | map(attribute='value') | flatten | unique }}"
+    name: "{{ cuda_force_remove_packages }}"
     state: absent
     purge: true
     autoremove: true

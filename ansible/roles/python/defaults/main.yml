@@ -1,5 +1,7 @@
 ---
 
+python_packages_force_reinstall: false
+
 python_packages:
   - python3-apt=2.7.7ubuntu5.1
   - python3-debian=0.1.49ubuntu2

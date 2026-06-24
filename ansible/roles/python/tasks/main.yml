@@ -4,7 +4,58 @@
   ansible.builtin.apt:
     name: "{{ python_packages }}"
     state: present
+    allow_downgrade: true
     update_cache: true
+  when: not (python_packages_force_reinstall | bool)
+  tags:
+    - python
+
+- name: Update APT cache before forced Python package reinstall
+  ansible.builtin.apt:
+    update_cache: true
+  when: python_packages_force_reinstall | bool
+  tags:
+    - python
+
+- name: Plan forced Python package reinstall
+  ansible.builtin.command:
+    argv: >-
+      {{
+        [
+          'apt-get',
+          '--simulate',
+          'install',
+          '--yes',
+          '--reinstall',
+          '--allow-downgrades',
+          '--allow-change-held-packages'
+        ] + python_packages
+      }}
+  changed_when: false
+  check_mode: false
+  when:
+    - python_packages_force_reinstall | bool
+    - ansible_check_mode
+  tags:
+    - python
+
+- name: Reinstall required Python packages with dependency resolution
+  ansible.builtin.command:
+    argv: >-
+      {{
+        [
+          'apt-get',
+          'install',
+          '--yes',
+          '--reinstall',
+          '--allow-downgrades',
+          '--allow-change-held-packages'
+        ] + python_packages
+      }}
+  changed_when: true
+  when:
+    - python_packages_force_reinstall | bool
+    - not ansible_check_mode
   tags:
     - python
 
