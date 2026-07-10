@@ -173,10 +173,13 @@ FROM cuda AS training
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      rdma-core="2404mlnx51-1.2404066" \
-      ibverbs-utils="2404mlnx51-1.2404066" \
-      libibverbs1 librdmacm1 libmlx5-1 libpci3 \
-      libibumad3 ibverbs-providers && \
+      rdma-core="2507mlnx58-1.2507097" \
+      ibverbs-utils="2507mlnx58-1.2507097" \
+      libibverbs1="2507mlnx58-1.2507097" \
+      librdmacm1="2507mlnx58-1.2507097" \
+      libmlx5-1 libpci3 \
+      libibumad3="2507mlnx58-1.2507097" \
+      ibverbs-providers="2507mlnx58-1.2507097" && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

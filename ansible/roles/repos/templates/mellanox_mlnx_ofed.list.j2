@@ -3,5 +3,5 @@
 # For more information, refer to http://linux.mellanox.com
 #
 
-# [mlnx_ofed_{{ repos_openmpi_version }}_base]
-deb http://linux.mellanox.com/public/repo/mlnx_ofed/{{ repos_openmpi_version }}/ubuntu{{ ansible_facts['distribution_version'] }}/$(ARCH) ./
+# [mellanox_doca_{{ ansible_facts['distribution_version'] }}_{{ repos_mellanox_arch_map[ansible_facts['architecture']] }}]
+deb {{ repos_mellanox_repo_url }}/ubuntu{{ ansible_facts['distribution_version'] }}/{{ repos_mellanox_arch_map[ansible_facts['architecture']] }} ./
