@@ -30,8 +30,8 @@ common_packages:
   - zip=3.0-13ubuntu0.2
 
   # rdma packages
-  - rdma-core=2404mlnx51-1.2404066
-  - ibverbs-utils=2404mlnx51-1.2404066
+  - rdma-core=2507mlnx58-1.2507097
+  - ibverbs-utils=2507mlnx58-1.2507097
 
   # required for Slurm
   - daemontools=1:0.76-10

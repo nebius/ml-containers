@@ -97,7 +97,7 @@
 
 - name: Add mellanox gpg key
   ansible.builtin.apt_key:
-    url: https://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox
+    url: https://linux.mellanox.com/public/repo/doca/GPG-KEY-Mellanox.pub
     keyring: /etc/apt/trusted.gpg
   tags:
     - openmpi-repo
