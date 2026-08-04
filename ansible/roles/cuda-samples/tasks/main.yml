@@ -4,18 +4,21 @@
   ansible.builtin.assert:
     that:
       - cuda_samples_cuda_version is defined
+      - cuda_samples_release_tag_map[cuda_samples_cuda_version] is defined
+      - cuda_samples_sha_map[cuda_samples_cuda_version] is defined
     fail_msg: >-
-      Missing cuda_samples_cuda_version
+      Unsupported or missing cuda_samples_cuda_version '{{ cuda_samples_cuda_version | default('') }}'.
+      Available: {{ cuda_samples_release_tag_map.keys() | list | join(', ') }}
   tags:
     - cuda-samples
 
 - name: Build cuda-samples vars
   vars:
     _arch: "{{ ansible_facts['architecture'] }}"
-    _distro: "{{ ansible_facts['distribution_version'] }}"
+    _release_tag: "{{ cuda_samples_release_tag_map[cuda_samples_cuda_version] }}"
   ansible.builtin.set_fact:
-    cuda_samples_url: "{{ '%s/cuda_samples_%s_ubuntu%s/cuda-samples-%s.tar.gz'
-                          | format(deb_repo_download_url, cuda_samples_cuda_version, _distro, _arch) }}"
+    cuda_samples_url: "{{ '%s/%s/cuda-samples-%s.tar.gz'
+                          | format(deb_repo_download_url | regex_replace('/+$', ''), _release_tag, _arch) }}"
     cuda_samples_path: "/tmp/cuda-samples-{{ _arch }}.tar.gz"
     cuda_samples_sha_hex: "{{ cuda_samples_sha_map[cuda_samples_cuda_version][_arch]
                               | regex_replace('^sha256:', '') }}"
