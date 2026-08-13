@@ -14,14 +14,19 @@ jobs:
         run: echo "daytime=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
 
   build_single_arch:
-    name: Build slurm=${{ matrix.slurm_version }} arch=${{ matrix.arch }}
+    name: Build slurm=${{ matrix.slurm.image_version }} arch=${{ matrix.arch }}
     needs: prepare
     runs-on: ${{ matrix.runner }}
 
     strategy:
       fail-fast: false
       matrix:
-        slurm_version: ["25.05.6", "25.11.3", "25.11.5"]
+        slurm:
+          - image_version: "25.05.6"
+          - image_version: "25.11.3"
+          - image_version: "25.11.5"
+          - image_version: "26.05.3-nebius-1-rc3"
+            apt_version: "26.05.3-nebius-1~rc3"
         arch: ["amd64", "arm64"]
         include:
           - arch: amd64
@@ -66,15 +71,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          IMAGE="${IMAGE_BASE}:${{ matrix.slurm_version }}-${DAYTIME}"
+          IMAGE="${IMAGE_BASE}:${{ matrix.slurm.image_version }}-${DAYTIME}"
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
-          CACHE_REF="${IMAGE_BASE}:${{ matrix.slurm_version }}-${{ matrix.arch }}"
+          CACHE_REF="${IMAGE_BASE}:${{ matrix.slurm.image_version }}-${{ matrix.arch }}"
 
           echo "Pushing: ${ARCH_TAG} (${{matrix.platform}}) with cache ${CACHE_REF}"
 
           docker buildx build \
             --platform "${{ matrix.platform }}" \
-            --build-arg SLURM_VERSION="${{ matrix.slurm_version }}" \
+            --build-arg SLURM_VERSION="${{ matrix.slurm.image_version }}" \
+            --build-arg SLURM_APT_VERSION="${{ matrix.slurm.apt_version }}" \
             -t "${ARCH_TAG}" \
             --target slurm \
             --progress=plain \
@@ -91,7 +97,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slurm_version: ["25.05.6", "25.11.3", "25.11.5"]
+        slurm_version: ["25.05.6", "25.11.3", "25.11.5", "26.05.3-nebius-1-rc3"]
 
     env:
       DAYTIME: ${{ needs.prepare.outputs.daytime }}
