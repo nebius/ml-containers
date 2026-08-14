@@ -77,10 +77,10 @@ RUN cd /opt/ansible && \
 FROM neubuntu AS base
 
 # Install common packages
-COPY ansible/common-packages.yml /opt/ansible/common-packages.yml
-COPY ansible/roles/common-packages /opt/ansible/roles/common-packages
+COPY ansible/common_packages.yml /opt/ansible/common_packages.yml
+COPY ansible/roles/common_packages /opt/ansible/roles/common_packages
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local common-packages.yml
+    ansible-playbook -i inventory/ -c local common_packages.yml
 
 # Install useful packages
 RUN apt-get update && \
@@ -113,6 +113,12 @@ FROM base AS slurm
 ARG SLURM_VERSION
 ENV SLURM_VERSION=$SLURM_VERSION
 ARG SLURM_APT_VERSION=""
+
+# Install doca-ofed (OpenMPI, UCX, and related configs)
+COPY ansible/doca_ofed.yml /opt/ansible/doca_ofed.yml
+COPY ansible/roles/doca_ofed /opt/ansible/roles/doca_ofed
+RUN cd /opt/ansible && \
+    ansible-playbook -i inventory/ -c local doca_ofed.yml
 
 # Install slurm client and divert files
 COPY ansible/slurm.yml /opt/ansible/slurm.yml
@@ -174,23 +180,11 @@ FROM cuda AS training
 # NCCL (without tests), rdma-core, ibverbs-utils, numactl, OpenMPI & UCX, Python
 ######
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      rdma-core="2507mlnx58-1.2507097" \
-      ibverbs-utils="2507mlnx58-1.2507097" \
-      libibverbs1="2507mlnx58-1.2507097" \
-      librdmacm1="2507mlnx58-1.2507097" \
-      libmlx5-1 libpci3 \
-      libibumad3="2507mlnx58-1.2507097" \
-      ibverbs-providers="2507mlnx58-1.2507097" && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install OpenMPI, UCX, and related config
-COPY ansible/openmpi.yml /opt/ansible/openmpi.yml
-COPY ansible/roles/openmpi /opt/ansible/roles/openmpi
+# Install doca-ofed (OpenMPI, UCX, and related configs)
+COPY ansible/doca_ofed.yml /opt/ansible/doca_ofed.yml
+COPY ansible/roles/doca_ofed /opt/ansible/roles/doca_ofed
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local openmpi.yml
+    ansible-playbook -i inventory/ -c local doca_ofed.yml
 
 #######################################################################################################################
 FROM cuda AS fryer
@@ -229,10 +223,10 @@ ARG CUDA_VERSION
 ENV CUDA_VERSION=$CUDA_VERSION
 
 # Install NCCL Inspector profiler plugin
-COPY ansible/nccl-inspector.yml /opt/ansible/nccl-inspector.yml
-COPY ansible/roles/nccl-inspector /opt/ansible/roles/nccl-inspector
+COPY ansible/nccl_inspector.yml /opt/ansible/nccl_inspector.yml
+COPY ansible/roles/nccl_inspector /opt/ansible/roles/nccl_inspector
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local nccl-inspector.yml \
+    ansible-playbook -i inventory/ -c local nccl_inspector.yml \
     -e "nccl_inspector_cuda_version=${CUDA_VERSION}"
 
 # Install dcgmi tools
@@ -253,23 +247,17 @@ ARG CUDA_VERSION
 ENV CUDA_VERSION=$CUDA_VERSION
 ARG NCCL_TESTS_VERSION
 ENV NCCL_TESTS_VERSION=$NCCL_TESTS_VERSION
-COPY ansible/nccl-tests.yml /opt/ansible/nccl-tests.yml
-COPY ansible/roles/nccl-tests /opt/ansible/roles/nccl-tests
+COPY ansible/nccl_tests.yml /opt/ansible/nccl_tests.yml
+COPY ansible/roles/nccl_tests /opt/ansible/roles/nccl_tests
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local nccl-tests.yml -e "nccl_tests_cuda_version=${CUDA_VERSION}" \
+    ansible-playbook -i inventory/ -c local nccl_tests.yml -e "nccl_tests_cuda_version=${CUDA_VERSION}" \
     -e "nccl_tests_version=${NCCL_TESTS_VERSION}"
 
 # Download cuda-samples executables
-COPY ansible/cuda-samples.yml /opt/ansible/cuda-samples.yml
-COPY ansible/roles/cuda-samples /opt/ansible/roles/cuda-samples
+COPY ansible/cuda_samples.yml /opt/ansible/cuda_samples.yml
+COPY ansible/roles/cuda_samples /opt/ansible/roles/cuda_samples
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local cuda-samples.yml -e "cuda_samples_cuda_version=${CUDA_VERSION}"
-
-# Download perftest executables
-COPY ansible/perftest.yml /opt/ansible/perftest.yml
-COPY ansible/roles/perftest /opt/ansible/roles/perftest
-RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local perftest.yml -e "perftest_cuda_version=${CUDA_VERSION}"
+    ansible-playbook -i inventory/ -c local cuda_samples.yml -e "cuda_samples_cuda_version=${CUDA_VERSION}"
 
 COPY --from=fryer /gpu-fryer/target/release/gpu-fryer /usr/bin/gpu-fryer
 
@@ -285,10 +273,10 @@ ENV SLURM_VERSION=$SLURM_VERSION
 ARG SLURM_APT_VERSION=""
 
 # Install slurm client and divert files
-COPY ansible/slurm-client.yml /opt/ansible/slurm-client.yml
-COPY ansible/roles/slurm-client /opt/ansible/roles/slurm-client
-COPY ansible/roles/slurm-divert /opt/ansible/roles/slurm-divert
+COPY ansible/slurm_client.yml /opt/ansible/slurm_client.yml
+COPY ansible/roles/slurm_client /opt/ansible/roles/slurm_client
+COPY ansible/roles/slurm_divert /opt/ansible/roles/slurm_divert
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local slurm-client.yml \
+    ansible-playbook -i inventory/ -c local slurm_client.yml \
     -e "slurm_version=${SLURM_VERSION}" \
     -e "slurm_apt_version=${SLURM_APT_VERSION}"

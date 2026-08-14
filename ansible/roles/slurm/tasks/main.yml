@@ -7,7 +7,7 @@
     fail_msg: Missing slurm_version variable.
   tags:
     - slurm
-    - slurm-packages
+    - slurm_packages
 
 # /var/spool/slurmd for bind-mounting it from the host. It's needed for sbatch to work
 - name: Create directories
@@ -22,7 +22,7 @@
     - /usr/lib/slurm
   tags:
     - slurm
-    - slurm-packages
+    - slurm_packages
 
 - name: Install Slurm packages from configured APT repositories
   vars:
@@ -39,7 +39,7 @@
     update_cache: true
   tags:
     - slurm
-    - slurm-packages
+    - slurm_packages
 
 - name: "Find all Slurm plugin files for architecture - {{ ansible_facts['architecture'] }}"
   ansible.builtin.find:
@@ -48,7 +48,7 @@
   register: slurm_plugins
   tags:
     - slurm
-    - slurm-packages
+    - slurm_packages
 
 - name: Symlink all Slurm plugin files into /usr/lib/slurm excluding specific ones
   ansible.builtin.file:
@@ -61,4 +61,4 @@
     label: "{{ item.path }}"
   tags:
     - slurm
-    - slurm-packages
+    - slurm_packages
