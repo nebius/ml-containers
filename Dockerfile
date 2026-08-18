@@ -112,12 +112,15 @@ FROM base AS slurm
 
 ARG SLURM_VERSION
 ENV SLURM_VERSION=$SLURM_VERSION
+ARG SLURM_APT_VERSION=""
 
 # Install slurm client and divert files
 COPY ansible/slurm.yml /opt/ansible/slurm.yml
 COPY ansible/roles/slurm /opt/ansible/roles/slurm
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local slurm.yml -e "slurm_version=${SLURM_VERSION}"
+    ansible-playbook -i inventory/ -c local slurm.yml \
+    -e "slurm_version=${SLURM_VERSION}" \
+    -e "slurm_apt_version=${SLURM_APT_VERSION}"
 
 # Update linker cache
 RUN ldconfig
@@ -279,10 +282,13 @@ FROM training_diag AS slurm_training_diag
 
 ARG SLURM_VERSION
 ENV SLURM_VERSION=$SLURM_VERSION
+ARG SLURM_APT_VERSION=""
 
 # Install slurm client and divert files
 COPY ansible/slurm-client.yml /opt/ansible/slurm-client.yml
 COPY ansible/roles/slurm-client /opt/ansible/roles/slurm-client
 COPY ansible/roles/slurm-divert /opt/ansible/roles/slurm-divert
 RUN cd /opt/ansible && \
-    ansible-playbook -i inventory/ -c local slurm-client.yml -e "slurm_version=${SLURM_VERSION}"
+    ansible-playbook -i inventory/ -c local slurm-client.yml \
+    -e "slurm_version=${SLURM_VERSION}" \
+    -e "slurm_apt_version=${SLURM_APT_VERSION}"

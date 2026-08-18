@@ -24,12 +24,15 @@
     - slurm
     - slurm-packages
 
-- name: Install Slurm packages
+- name: Install Slurm packages from configured APT repositories
+  vars:
+    slurm_resolved_apt_version: >-
+      {{ slurm_apt_version | default(slurm_version ~ '-1', true) }}
   ansible.builtin.apt:
     name: >-
       {{
         slurm_packages
-        | map('regex_replace', '$', '=' ~ slurm_version ~ '-1')
+        | map('regex_replace', '$', '=' ~ slurm_resolved_apt_version)
         | list
       }}
     state: present
