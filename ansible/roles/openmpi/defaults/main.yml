@@ -1,6 +1,0 @@
----
-
-openmpi_version: 4.1.9a1-1.20250722.92f9fca4eb.2507097
-openmpi_version_short: 4.1.9a1
-openmpi_ucx_version: 1.19.0-1.20250722.13ae265cb.2507097
-openmpi_infiniband_diags_version: 2507mlnx58-1.2507097

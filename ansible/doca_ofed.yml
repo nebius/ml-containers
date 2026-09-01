@@ -1,0 +1,15 @@
+---
+
+- name: Install doca-ofed
+  hosts:
+    - localhost
+    - all
+  become: true
+  gather_facts: true
+  gather_subset:
+    - min
+  roles:
+    - doca_ofed
+  tags:
+    - openmpi
+    - doca_ofed

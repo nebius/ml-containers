@@ -1,0 +1,68 @@
+---
+
+- name: Assert architecture is supported for doca-ofed
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['architecture'] in doca_ofed_supported_architectures
+    fail_msg: "Unsupported arch: {{ ansible_facts['architecture'] }}"
+  tags:
+    - doca_ofed
+    - openmpi
+
+- name: Ensure doca-ofed packages are installed
+  ansible.builtin.apt:
+    name:
+      - doca-ofed={{ doca_ofed_version }}
+    state: present
+    update_cache: true
+  tags:
+    - doca_ofed
+    - openmpi
+
+- name: Add OpenMPI to global PATH
+  ansible.builtin.copy:
+    dest: /etc/profile.d/path_openmpi.sh
+    content: export PATH=/usr/mpi/gcc/openmpi-{{ doca_ofed_openmpi_version_short }}/bin:$PATH
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - doca_ofed
+    - openmpi
+
+- name: Configure OpenMPI LD_LIBRARY_PATH in /etc/environment
+  vars:
+    doca_ofed_ld_library_path:
+      - "/usr/mpi/gcc/openmpi-{{ doca_ofed_openmpi_version_short }}/lib"
+      - "/lib/{{ ansible_facts['architecture'] }}-linux-gnu"
+      - "/usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu"
+      - "/usr/local/cuda/targets/{{ ansible_facts['architecture'] }}-linux/lib"
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    regexp: "^LD_LIBRARY_PATH="
+    line: "LD_LIBRARY_PATH={{ doca_ofed_ld_library_path | join(':') }}"
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - doca_ofed
+    - openmpi
+
+- name: Configure OpenMPI library paths
+  ansible.builtin.copy:
+    dest: /etc/ld.so.conf.d/openmpi.conf
+    content: |
+      /lib/{{ ansible_facts['architecture'] }}-linux-gnu
+      /usr/lib/{{ ansible_facts['architecture'] }}-linux-gnu
+      /usr/local/cuda/targets/{{ ansible_facts['architecture'] }}-linux/lib
+      /usr/mpi/gcc/openmpi-{{ doca_ofed_openmpi_version_short }}/lib
+    owner: root
+    group: root
+    mode: '0644'
+  register: doca_ofed_openmpi_conf
+  notify:
+    - Update linker cache
+  tags:
+    - doca_ofed
+    - openmpi

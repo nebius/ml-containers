@@ -6,7 +6,7 @@ repos_mellanox_arch_map:
   amd64: x86_64
   x86_64: x86_64
   arm64: arm64
-  aarch64: arm64
+  aarch64: arm64-sbsa
 
 repos_cuda_dpkg_arch_map:
   x86_64: x86_64

@@ -8,7 +8,7 @@
     - /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
     - /etc/apt/sources.list.d/ubuntu.sources
   tags:
-    - repos-absent
+    - repos_absent
     - repos
 
 - name: Copy repository list files
@@ -25,7 +25,7 @@
     - nvidia-container-toolkit.list
     - quentiumyt-ubuntu-nvtop-noble.sources
   tags:
-    - nvidia-container-toolkit-repo
+    - nvidia_container_toolkit_repo
     - repos
 
 - name: Download Nebius public GPG key
@@ -35,7 +35,7 @@
     mode: "0644"
     checksum: "sha256:e4ec7915ef64976047b3a65db93cbfa94072a8179e77e29ea78f379d30bf4030"
   tags:
-    - nebius-repo
+    - nebius_repo
     - repos
 
 - name: Add Nebius APT repository
@@ -48,7 +48,7 @@
     group: root
     mode: "0644"
   tags:
-    - nebius-repo
+    - nebius_repo
     - repos
 
 - name: Add docker apt key
@@ -58,7 +58,7 @@
     checksum: "sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570"
     mode: "0644"
   tags:
-    - docker-repo
+    - docker_repo
     - repos
 
 - name: Add Docker APT repository
@@ -71,7 +71,7 @@
     signed_by: /etc/apt/keyrings/docker.asc
     state: present
   tags:
-    - docker-repo
+    - docker_repo
     - repos
 
 - name: Download and convert NVIDIA GPG key
@@ -83,7 +83,7 @@
     executable: /bin/bash
     creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
   tags:
-    - nvidia-container-toolkit-repo
+    - nvidia_container_toolkit_repo
     - repos
 
 - name: Configure ofed repositories
@@ -92,7 +92,7 @@
     dest: /etc/apt/sources.list.d/mellanox_mlnx_ofed.list
     mode: "0644"
   tags:
-    - openmpi-repo
+    - openmpi_repo
     - repos
 
 - name: Add mellanox gpg key
@@ -100,7 +100,7 @@
     url: https://linux.mellanox.com/public/repo/doca/GPG-KEY-Mellanox.pub
     keyring: /etc/apt/trusted.gpg
   tags:
-    - openmpi-repo
+    - openmpi_repo
     - repos
 
 - name: Build CUDA keyring URL
@@ -120,7 +120,7 @@
   register: repos_cuda_keyring_stat
   tags:
     - repos
-    - cuda-repo
+    - cuda_repo
 
 - name: Would download CUDA keyring (check-mode)
   ansible.builtin.debug:
@@ -128,7 +128,7 @@
   when: ansible_check_mode and not repos_cuda_keyring_stat.stat.exists
   tags:
     - repos
-    - cuda-repo
+    - cuda_repo
 
 - name: Would install CUDA keyring (check-mode)
   ansible.builtin.debug:
@@ -136,7 +136,7 @@
   when: ansible_check_mode
   tags:
     - repos
-    - cuda-repo
+    - cuda_repo
 
 - name: Download NVIDIA CUDA keyring package
   ansible.builtin.get_url:
@@ -148,7 +148,7 @@
   when: not ansible_check_mode
   tags:
     - repos
-    - cuda-repo
+    - cuda_repo
 
 - name: Install NVIDIA CUDA keyring package
   ansible.builtin.apt:
@@ -157,4 +157,4 @@
   when: not ansible_check_mode
   tags:
     - repos
-    - cuda-repo
+    - cuda_repo
