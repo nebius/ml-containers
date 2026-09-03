@@ -86,19 +86,16 @@
     - nvidia_container_toolkit_repo
     - repos
 
-- name: Configure ofed repositories
-  ansible.builtin.template:
-    src: mellanox_mlnx_ofed.list.j2
-    dest: /etc/apt/sources.list.d/mellanox_mlnx_ofed.list
-    mode: "0644"
-  tags:
-    - openmpi_repo
-    - repos
-
-- name: Add mellanox gpg key
-  ansible.builtin.apt_key:
-    url: https://linux.mellanox.com/public/repo/doca/GPG-KEY-Mellanox.pub
-    keyring: /etc/apt/trusted.gpg
+- name: Add doca-ofed repo Nebius mirror
+  vars:
+    _mellanox_arch: "{{ repos_mellanox_arch_map[ansible_facts['architecture']] }}"
+  ansible.builtin.deb822_repository:
+    name: "{{ repos_mellanox_repo_name }}"
+    types: deb
+    uris: "{{ repos_mellanox_repo_uri_map[_mellanox_arch] }}"
+    suites: "{{ repos_mellanox_repo_suites }}"
+    architectures: "{{ _mellanox_arch }}"
+    signed_by: "{{ repos_mellanox_repo_signed_by }}"
   tags:
     - openmpi_repo
     - repos
