@@ -194,7 +194,7 @@ FROM cuda AS fryer
 ######
 
 ENV REPO_URL="https://github.com/huggingface/gpu-fryer"
-ENV TAG="v1.1.0"
+ENV FRYER_VERSION="1.2.0"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -206,7 +206,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN git clone --depth 1 --branch "${TAG}" "${REPO_URL}" /gpu-fryer
+RUN git clone --depth 1 --branch "v${FRYER_VERSION}" "${REPO_URL}" /gpu-fryer
 
 WORKDIR /gpu-fryer
 
