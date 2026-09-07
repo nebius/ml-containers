@@ -1,7 +1,0 @@
-#
-# Mellanox Technologies Ltd. public repository configuration file.
-# For more information, refer to http://linux.mellanox.com
-#
-
-# [mellanox_doca_{{ ansible_facts['distribution_version'] }}_{{ repos_mellanox_arch_map[ansible_facts['architecture']] }}]
-deb {{ repos_mellanox_repo_url }}/ubuntu{{ ansible_facts['distribution_version'] }}/{{ repos_mellanox_arch_map[ansible_facts['architecture']] }} ./
