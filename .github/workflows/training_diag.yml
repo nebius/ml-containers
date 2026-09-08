@@ -22,11 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # CUDA 12 + NCCL tests 2.20.0
+          # CUDA 12 + NCCL tests 2.17.9
           - name: training_diag-cuda12
             cuda_version: "12.9.0"
             ubuntu_version: "ubuntu24.04"
-            nccl_tests_version: "2.20.0"
+            nccl_tests_version: "2.17.9"
             arch: amd64
             platform: linux/amd64
             runner: ubuntu-24.04
@@ -35,7 +35,7 @@ jobs:
           - name: training_diag-cuda12
             cuda_version: "12.9.0"
             ubuntu_version: "ubuntu24.04"
-            nccl_tests_version: "2.20.0"
+            nccl_tests_version: "2.17.9"
             arch: arm64
             platform: linux/arm64
             runner: ubuntu-24.04-arm
