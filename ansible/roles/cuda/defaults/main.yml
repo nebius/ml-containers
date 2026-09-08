@@ -77,7 +77,7 @@ cuda_pin_content:
     Pin: version 2.30.3-1+cuda12.9
     Pin-Priority: 1001
 
-  "13.0.2": |
+  "13.0.3": |
     Package: cuda-drivers
     Pin: version 99999999-fake
     Pin-Priority: 1001
