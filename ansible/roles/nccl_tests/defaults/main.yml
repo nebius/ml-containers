@@ -18,7 +18,7 @@ nccl_tests_sha_map:
     "2.17.9":
       "x86_64": "sha256:df0a43032bcd3920de71316f3baa8c7a4f87b4dfd44cb782b2487bdaa6a189ea"
       "aarch64": "sha256:b6ee46395b8017c0a9ff5829cca5a7bd9e1a9473a36a141dfd3e3847d94b55e9"
-  "13.0.2":
+  "13.0.3":
     "2.17.6":
       "x86_64": "sha256:e24db0de81e0cf4792a12c329f5d81dcc328c53fab7ada942e4588f303c6e332"
       "aarch64": "sha256:b686693104ad10291070f000fac39cb31575a636211135a9d7719172c2cf94b4"
