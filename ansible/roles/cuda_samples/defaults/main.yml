@@ -2,13 +2,13 @@
 
 cuda_samples_release_tag_map:
   "12.9.0": "cuda_samples_12.9.0_ubuntu24.04_20260803133750"
-  "13.0.2": "cuda_samples_13.0.2_ubuntu24.04_20260803133750"
+  "13.0.3": "cuda_samples_13.0.2_ubuntu24.04_20260803133750"
 
 cuda_samples_sha_map:
   # cuda: architecture
   "12.9.0":
     "x86_64": "sha256:d5d134204fd3298dbad280993e96e64ef9d2724305f3e9c0610d7e6d9a26bf32"
     "aarch64": "sha256:968644497c0bbe2ea02bce3290721215cfd98f70900384b357acc6177986981e"
-  "13.0.2":
+  "13.0.3":
     "x86_64": "sha256:9357918575fb07d93588a7a4c941707ef0a8c5ab3e30a3629c11d7b9cf423ce4"
     "aarch64": "sha256:949459486df6aecc53dce0bf08b231633b80a3431896ea779c8f0f1ab69dd272"
