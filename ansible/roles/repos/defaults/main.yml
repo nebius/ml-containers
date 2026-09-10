@@ -1,5 +1,5 @@
 ---
-repos_mellanox_doca_version: 3.1.0
+repos_mellanox_doca_version: 3.3.0
 repos_mellanox_repo_name: mellanox_mlnx_ofed
 repos_mellanox_repo_suites: /
 repos_mellanox_repo_signed_by: https://mirror.eu.nebius.cloud/nvidia/doca/key.gpg
@@ -11,8 +11,8 @@ repos_mellanox_arch_map:
   aarch64: arm64-sbsa
 
 repos_mellanox_repo_uri_map:
-  amd64: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/amd64/20250805_070037/"
-  arm64-sbsa: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/arm64-sbsa/20250805_070035/"
+  amd64: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/amd64/20260218_061534/"
+  arm64-sbsa: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/arm64-sbsa/20260218_061536/"
 
 repos_cuda_dpkg_arch_map:
   x86_64: x86_64

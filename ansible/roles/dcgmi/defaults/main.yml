@@ -6,5 +6,5 @@ dcgmi_cuda_packages_map:
     - "datacenter-gpu-manager-4-cuda12=1:4.5.2-1"
     - "datacenter-gpu-manager-4-core=1:4.5.2-1"
   "13":
-    - "datacenter-gpu-manager-4-cuda13=1:4.5.2-1"
-    - "datacenter-gpu-manager-4-core=1:4.5.2-1"
+    - "datacenter-gpu-manager-4-cuda13=1:4.6.1-1"
+    - "datacenter-gpu-manager-4-core=1:4.6.1-1"

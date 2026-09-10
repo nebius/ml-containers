@@ -1,6 +1,6 @@
 ---
 
-doca_ofed_version: 3.1.0-091000
+doca_ofed_version: 3.3.0-088000
 doca_ofed_openmpi_version_short: 4.1.9a1
 doca_ofed_supported_architectures:
   - x86_64

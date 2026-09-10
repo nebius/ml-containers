@@ -8,7 +8,7 @@ common_packages_list:
   - build-essential=12.10ubuntu1
   - ca-certificates=20240203
   - flex=2.6.4-8.2build1
-  - gnupg=2.4.4-2ubuntu17.4
+  - gnupg
   - jq=1.7.1-3ubuntu0.24.04.1
   - kmod=31+20240202-2ubuntu7.1
   - libdrm-dev=2.4.122-1~ubuntu0.24.04.2
