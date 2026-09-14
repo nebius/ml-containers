@@ -53,8 +53,7 @@ jobs:
 
     env:
       DAYTIME: ${{ needs.prepare.outputs.daytime }}
-      # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
-      IMAGE_BASE: cr.eu-north1.nebius.cloud/ml-containers/cuda
+      IMAGE_BASE: cr.nebius.cloud/ml-containers/cuda
 
     steps:
       - name: Checkout repository
@@ -117,7 +116,7 @@ jobs:
 
     env:
       DAYTIME: ${{ needs.prepare.outputs.daytime }}
-      IMAGE_BASE: cr.eu-north1.nebius.cloud/ml-containers/cuda
+      IMAGE_BASE: cr.nebius.cloud/ml-containers/cuda
 
     steps:
       - name: Set up Docker Buildx

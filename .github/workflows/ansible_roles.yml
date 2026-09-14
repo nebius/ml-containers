@@ -16,8 +16,7 @@ jobs:
 
       - id: set_image
         name: Set base image name
-        # https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
-        run: echo "image=cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ steps.set_daytime.outputs.daytime }}" >> "$GITHUB_OUTPUT"
+        run: echo "image=cr.nebius.cloud/ml-containers/ansible_roles:noble-${{ steps.set_daytime.outputs.daytime }}" >> "$GITHUB_OUTPUT"
 
   build_single_arch:
     name: ${{ matrix.arch }} build
@@ -71,7 +70,7 @@ jobs:
           set -euo pipefail
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
           
-          CACHE_REF="cr.eu-north1.nebius.cloud/ml-containers/ansible_roles:noble-${{ matrix.arch }}"
+          CACHE_REF="cr.nebius.cloud/ml-containers/ansible_roles:noble-${{ matrix.arch }}"
 
           echo "Pushing ${ARCH_TAG} (${{ matrix.platform }}) with cache ${CACHE_REF}"
 
