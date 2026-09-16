@@ -1,5 +1,4 @@
-# https://console.eu.nebius.com/project-e00managed-schedulers/registry/registry-e00hrt9na9xsn2px9f
-FROM cr.eu-north1.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
+FROM cr.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
 
 ######
 # Base Ubuntu image (Neubuntu as Nebius + Ubuntu) with modified repositories. It uses Nebius mirrors of the public Ubuntu
