@@ -2,6 +2,10 @@
 
 nccl_tests_sha_map:
   # cuda: nccl_tests: architecture
+  "12.9.0":
+    "2.17.9":
+      "x86_64": "sha256:df0a43032bcd3920de71316f3baa8c7a4f87b4dfd44cb782b2487bdaa6a189ea"
+      "aarch64": "sha256:b6ee46395b8017c0a9ff5829cca5a7bd9e1a9473a36a141dfd3e3847d94b55e9"
   "13.0.2":
     "2.17.9":
       "x86_64": "sha256:58732b440bfa828f5085e7c5b573fe8043c7415398b400c21c68c5f51b1215e5"
