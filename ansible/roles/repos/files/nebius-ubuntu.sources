@@ -1,7 +1,13 @@
+# Snapshot at 2024-04-25 15:10
 Types: deb
-URIs: https://mirror.eu.nebius.cloud/ubuntu
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/noble/20240425_151033
+Suites: noble
 Components: main restricted universe multiverse
-Suites: noble noble-backports
-## All sources include proposed
-# Suites: noble noble-updates noble-security noble-backports noble-proposed
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+# Snapshot at 2026-09-27 19:52
+Types: deb
+URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/noble-backports/20260927_195224
+Suites: noble-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
