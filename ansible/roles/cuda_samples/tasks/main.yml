@@ -54,11 +54,15 @@
     mode: "0644"
     checksum: "sha256:{{ cuda_samples_sha_hex }}"
     force: false
+    timeout: 60
   when: (not ansible_check_mode) and (
     (not cuda_samples_stat.stat.exists) or
     (cuda_samples_stat.stat.checksum != cuda_samples_sha_hex)
     )
   register: cuda_samples_dl
+  retries: 3
+  delay: 5
+  until: cuda_samples_dl is succeeded
   tags:
     - cuda_samples
 
