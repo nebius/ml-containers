@@ -58,11 +58,15 @@
     mode: "0644"
     checksum: "sha256:{{ nccl_tests_sha_hex }}"
     force: false
+    timeout: 60
   when: (not ansible_check_mode) and (
     (not nccl_tests_stat.stat.exists) or
     (nccl_tests_stat.stat.checksum != nccl_tests_sha_hex)
     )
   register: nccl_tests_dl
+  retries: 3
+  delay: 5
+  until: nccl_tests_dl is succeeded
   tags:
     - nccl_tests
 
