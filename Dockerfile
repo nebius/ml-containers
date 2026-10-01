@@ -48,8 +48,8 @@ ENV LANG=en_US.utf8 \
 # Install minimal python packages for Ansible
 RUN apt-get update &&  \
     apt-get install -y \
-        python3.12="3.12.3-1ubuntu0.11" \
-        python3.12-venv="3.12.3-1ubuntu0.11"
+        python3.12="3.12.3-1ubuntu0.17" \
+        python3.12-venv="3.12.3-1ubuntu0.17"
 
 # Install Ansible and base configs
 COPY ansible/ansible.cfg /opt/ansible/ansible.cfg

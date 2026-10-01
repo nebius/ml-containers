@@ -1,6 +1,6 @@
+# Snapshot at 2026-09-26 18:05
 Types: deb
-URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/noble-security/20260217_073801
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-Components: main restricted universe multiverse
+URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/noble-security/20260926_180549
 Suites: noble-security
-
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
