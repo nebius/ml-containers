@@ -22,6 +22,7 @@ common_packages_list:
   - libtool=2.4.7-7build1
   - numactl=2.0.18-1ubuntu0.24.04.1
   - pkg-config=1.8.1-2build1
+  - python3-clustershell
   - software-properties-common=0.99.49.4
   - sudo=1.9.15p5-3ubuntu5.24.04.3
   - time=1.9-0.2build1
