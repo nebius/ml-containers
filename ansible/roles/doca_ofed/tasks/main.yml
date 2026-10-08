@@ -13,7 +13,7 @@
   ansible.builtin.apt:
     name:
       - doca-ofed={{ doca_ofed_version }}
-    state: present
+      - doca-perftest={{ doca_ofed_perftest_version }}
     update_cache: true
   tags:
     - doca_ofed
