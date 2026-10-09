@@ -1,5 +1,19 @@
 ---
 
+- name: Configure APT network retries
+  ansible.builtin.copy:
+    dest: "{{ repos_apt_config_path }}"
+    content: |
+      Acquire::Retries "{{ repos_apt_acquire_retries }}";
+      Acquire::http::Timeout "{{ repos_apt_http_timeout }}";
+      Acquire::https::Timeout "{{ repos_apt_https_timeout }}";
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - apt_config
+    - repos
+
 - name: Remove repos (backward compatibility)
   ansible.builtin.file:
     path: "{{ item }}"

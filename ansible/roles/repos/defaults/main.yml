@@ -1,4 +1,9 @@
 ---
+repos_apt_config_path: /etc/apt/apt.conf.d/80-retries
+repos_apt_acquire_retries: 5
+repos_apt_http_timeout: 30
+repos_apt_https_timeout: 30
+
 repos_mellanox_doca_version: 3.3.0
 repos_mellanox_repo_name: mellanox_mlnx_ofed
 repos_mellanox_repo_suites: /
