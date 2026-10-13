@@ -124,6 +124,7 @@ jobs:
         run: nebius registry configure-helper
 
       - name: Create and push manifest list
+        id: publish
         shell: bash
         run: |
           set -euo pipefail
@@ -139,3 +140,10 @@ jobs:
             -t "${IMAGE}" \
             "${AMD}" \
             "${ARM}"
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT" || echo "::warning::Cannot record image for warming"
+
+      - name: Warm published image
+        continue-on-error: true
+        uses: nebius/soperator/.github/actions/warm-registry@6a0e7c63ed58fd607869934ac1d69470acb47995
+        with:
+          images: ${{ steps.publish.outputs.image }}
