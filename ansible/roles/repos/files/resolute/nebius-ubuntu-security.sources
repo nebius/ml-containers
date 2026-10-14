@@ -1,0 +1,6 @@
+# Snapshot at 2026-10-13 03:05
+Types: deb
+URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/resolute-security/20261013_030506
+Suites: resolute-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg

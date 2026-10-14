@@ -8,24 +8,26 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       daytime: ${{ steps.set_daytime.outputs.daytime }}
-      image: ${{ steps.set_image.outputs.image }}
+      image_repo: ${{ steps.set_image.outputs.image_repo }}
     steps:
       - id: set_daytime
         name: Compute shared DAYTIME
         run: echo "daytime=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
 
       - id: set_image
-        name: Set base image name
-        run: echo "image=cr.nebius.cloud/ml-containers/neubuntu:noble-${{ steps.set_daytime.outputs.daytime }}" >> "$GITHUB_OUTPUT"
+        name: Set base image repository
+        run: echo "image_repo=cr.nebius.cloud/ml-containers/neubuntu" >> "$GITHUB_OUTPUT"
 
   build_single_arch:
-    name: ${{ matrix.arch }} build
+    name: ${{ matrix.release }} ${{ matrix.arch }} build
     needs: prepare
     runs-on: ${{ matrix.runner }}
 
     strategy:
       fail-fast: false
       matrix:
+        release: [noble, resolute]
+        arch: [amd64, arm64]
         include:
           - arch: amd64
             platform: linux/amd64
@@ -33,9 +35,19 @@ jobs:
           - arch: arm64
             platform: linux/arm64
             runner: ubuntu-24.04-arm
+          # Ubuntu 24.04 LTS: Dockerfile defaults
+          - release: noble
+            build_args: ""
+          # Ubuntu 26.04 LTS
+          - release: resolute
+            build_args: >-
+              --build-arg BASE_IMAGE=ubuntu:26.04@sha256:f144425ff09be612d6d9ad965196e9cdc23dae1f42110a8a11a3e9a8198759f7
+              --build-arg UBUNTU_RELEASE=resolute
+              --build-arg PYTHON_VERSION=3.14
+              --build-arg PYTHON_APT_VERSION=3.14.4-1ubuntu0.2
 
     env:
-      IMAGE: ${{ needs.prepare.outputs.image }}
+      IMAGE: ${{ needs.prepare.outputs.image_repo }}:${{ matrix.release }}-${{ needs.prepare.outputs.daytime }}
 
     steps:
       - name: Checkout repository
@@ -69,7 +81,7 @@ jobs:
         run: |
           set -euo pipefail
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
-          CACHE_REF="cr.nebius.cloud/ml-containers/neubuntu:noble-${{ matrix.arch }}"
+          CACHE_REF="${{ needs.prepare.outputs.image_repo }}:${{ matrix.release }}-${{ matrix.arch }}"
 
           echo "Pushing ${ARCH_TAG} (${{ matrix.platform }}) with cache ${CACHE_REF}"
 
@@ -77,6 +89,7 @@ jobs:
             --platform "${{ matrix.platform }}" \
             -t "${ARCH_TAG}" \
             --target neubuntu \
+            ${{ matrix.build_args }} \
             --progress=plain \
             --cache-from=type=registry,ref="${CACHE_REF}" \
             --cache-to=type=registry,ref="${CACHE_REF}",mode=max \
@@ -84,12 +97,19 @@ jobs:
             .
 
   create_manifest:
-    name: Create & push multi-arch manifest
+    name: Create & push ${{ matrix.release }} multi-arch manifest
     needs: [prepare, build_single_arch]
+    # Publish each release whose images were built, even if the other release failed
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
 
+    strategy:
+      fail-fast: false
+      matrix:
+        release: [noble, resolute]
+
     env:
-      IMAGE: ${{ needs.prepare.outputs.image }}
+      IMAGE: ${{ needs.prepare.outputs.image_repo }}:${{ matrix.release }}-${{ needs.prepare.outputs.daytime }}
 
     steps:
       - name: Set up Docker Buildx

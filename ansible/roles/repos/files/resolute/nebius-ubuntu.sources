@@ -1,0 +1,13 @@
+# Snapshot at 2026-04-23 17:07
+Types: deb
+URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/resolute/20260423_170715
+Suites: resolute
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+# Snapshot at 2026-10-12 05:34
+Types: deb
+URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/resolute-backports/20261012_053425
+Suites: resolute-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
