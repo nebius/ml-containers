@@ -1,4 +1,9 @@
-FROM cr.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f AS neubuntu
+# Ubuntu 24.04 (noble) by default. For 26.04 (resolute) pass:
+#   --build-arg BASE_IMAGE=ubuntu:26.04@sha256:f144425ff09be612d6d9ad965196e9cdc23dae1f42110a8a11a3e9a8198759f7 \
+#   --build-arg UBUNTU_RELEASE=resolute --build-arg PYTHON_VERSION=3.14 --build-arg PYTHON_APT_VERSION=3.14.4-1ubuntu0.2
+ARG BASE_IMAGE=cr.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f
+
+FROM ${BASE_IMAGE} AS neubuntu
 
 ######
 # Base Ubuntu image (Neubuntu as Nebius + Ubuntu) with modified repositories. It uses Nebius mirrors of the public Ubuntu
@@ -12,6 +17,10 @@ LABEL org.opencontainers.image.authors="Pavel Sofronii pavel.sofrony@nebius.com"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 ENV LANG=en_US.UTF-8
+
+ARG UBUNTU_RELEASE=noble
+ARG PYTHON_VERSION=3.12
+ARG PYTHON_APT_VERSION=3.12.3-1ubuntu0.17
 
 # Install reqirements for Nebius Ubuntu mirror
 RUN apt-get update && \
@@ -27,9 +36,9 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Add Nebius Ubuntu mirrors
-COPY ansible/roles/repos/files/nebius-ubuntu.sources /etc/apt/sources.list.d/nebius-ubuntu.sources
-COPY ansible/roles/repos/files/nebius-ubuntu-security.sources /etc/apt/sources.list.d/nebius-ubuntu-security.sources
-COPY ansible/roles/repos/files/nebius-ubuntu-updates.sources /etc/apt/sources.list.d/nebius-ubuntu-updates.sources
+COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/nebius-ubuntu.sources /etc/apt/sources.list.d/nebius-ubuntu.sources
+COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/nebius-ubuntu-security.sources /etc/apt/sources.list.d/nebius-ubuntu-security.sources
+COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/nebius-ubuntu-updates.sources /etc/apt/sources.list.d/nebius-ubuntu-updates.sources
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
@@ -48,14 +57,14 @@ ENV LANG=en_US.utf8 \
 # Install minimal python packages for Ansible
 RUN apt-get update &&  \
     apt-get install -y \
-        python3.12="3.12.3-1ubuntu0.17" \
-        python3.12-venv="3.12.3-1ubuntu0.17"
+        "python${PYTHON_VERSION}${PYTHON_APT_VERSION:+=${PYTHON_APT_VERSION}}" \
+        "python${PYTHON_VERSION}-venv${PYTHON_APT_VERSION:+=${PYTHON_APT_VERSION}}"
 
 # Install Ansible and base configs
 COPY ansible/ansible.cfg /opt/ansible/ansible.cfg
 COPY ansible/requirements.txt /opt/ansible/requirements.txt
 COPY ansible/inventory/ /opt/ansible/inventory/
-RUN cd /opt/ansible && /usr/bin/python3.12 -m venv .venv && \
+RUN cd /opt/ansible && "/usr/bin/python${PYTHON_VERSION}" -m venv .venv && \
     . .venv/bin/activate && pip install -r requirements.txt
 
 ENV PATH="/opt/ansible/.venv/bin:${PATH}"

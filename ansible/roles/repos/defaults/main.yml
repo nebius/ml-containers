@@ -15,14 +15,38 @@ repos_mellanox_arch_map:
   arm64: arm64-sbsa
   aarch64: arm64-sbsa
 
+# Keyed by Ubuntu release codename. Releases without an entry get no DOCA repo
+# (no pinned DOCA snapshot exists for resolute yet).
 repos_mellanox_repo_uri_map:
-  amd64: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/amd64/20260218_061534/"
-  arm64-sbsa: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/arm64-sbsa/20260218_061536/"
+  noble:
+    amd64: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/amd64/20260218_061534/"
+    arm64-sbsa: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/arm64-sbsa/20260218_061536/"
+
+# Per-release repository source files from files/<release>/
+repos_ubuntu_sources_map:
+  noble:
+    - nebius-ubuntu-security.sources
+    - nebius-ubuntu-updates.sources
+    - nebius-ubuntu.sources
+    - quentiumyt-ubuntu-nvtop-noble.sources
+  resolute:
+    - nebius-ubuntu-security.sources
+    - nebius-ubuntu-updates.sources
+    - nebius-ubuntu.sources
+
+# Releases published at dr.nebius.cloud as a dedicated suite
+repos_nebius_release_suites:
+  - noble
 
 repos_cuda_dpkg_arch_map:
   x86_64: x86_64
   aarch64: sbsa
 
+# Keyed by Ubuntu release codename, then architecture
 repos_cuda_sha256_map:
-  x86_64: "sha256:d2a6b11c096396d868758b86dab1823b25e14d70333f1dfa74da5ddaf6a06dba"
-  aarch64: "sha256:6ea7d2737648936820e85677177957a0f6521b840d98eb0bbae0a4f003fa7249"
+  noble:
+    x86_64: "sha256:d2a6b11c096396d868758b86dab1823b25e14d70333f1dfa74da5ddaf6a06dba"
+    aarch64: "sha256:6ea7d2737648936820e85677177957a0f6521b840d98eb0bbae0a4f003fa7249"
+  resolute:
+    x86_64: "sha256:f7f474b5f6a4adf987aa587920df00e713285958ef6a913dda1945a544a3099e"
+    aarch64: "sha256:bf74da243be6737d338a8e6f03469eb983825bba7b6dbd0b6d6a6f60229cbb6e"

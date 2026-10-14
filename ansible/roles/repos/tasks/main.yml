@@ -25,6 +25,18 @@
     - repos_absent
     - repos
 
+- name: Copy Ubuntu release repository list files
+  ansible.builtin.copy:
+    src: "{{ ansible_facts['distribution_release'] }}/{{ item }}"
+    dest: "/etc/apt/sources.list.d/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ repos_ubuntu_sources_map[ansible_facts['distribution_release']] }}"
+  tags:
+    - nvidia_container_toolkit_repo
+    - repos
+
 - name: Copy repository list files
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -33,11 +45,7 @@
     group: root
     mode: '0644'
   loop:
-    - nebius-ubuntu-security.sources
-    - nebius-ubuntu-updates.sources
-    - nebius-ubuntu.sources
     - nvidia-container-toolkit.list
-    - quentiumyt-ubuntu-nvtop-noble.sources
   tags:
     - nvidia_container_toolkit_repo
     - repos
@@ -56,7 +64,9 @@
   ansible.builtin.copy:
     dest: /etc/apt/sources.list.d/nebius.list
     content: |
+      {% if ansible_facts['distribution_release'] in repos_nebius_release_suites %}
       deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ {{ ansible_facts['distribution_release'] }} main
+      {% endif %}
       deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ stable main
     owner: root
     group: root
@@ -106,10 +116,11 @@
   ansible.builtin.deb822_repository:
     name: "{{ repos_mellanox_repo_name }}"
     types: deb
-    uris: "{{ repos_mellanox_repo_uri_map[_mellanox_arch] }}"
+    uris: "{{ repos_mellanox_repo_uri_map[ansible_facts['distribution_release']][_mellanox_arch] }}"
     suites: "{{ repos_mellanox_repo_suites }}"
     architectures: "{{ _mellanox_arch }}"
     signed_by: "{{ repos_mellanox_repo_signed_by }}"
+  when: ansible_facts['distribution_release'] in repos_mellanox_repo_uri_map
   tags:
     - openmpi_repo
     - repos
@@ -155,7 +166,7 @@
     dest: "{{ repos_cuda_keyring_path }}"
     mode: "0644"
     force: false
-    checksum: "{{ repos_cuda_sha256_map[ansible_facts['architecture']] }}"
+    checksum: "{{ repos_cuda_sha256_map[ansible_facts['distribution_release']][ansible_facts['architecture']] | default(omit) }}"
   when: not ansible_check_mode
   tags:
     - repos
