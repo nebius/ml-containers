@@ -136,6 +136,6 @@ jobs:
 
       - name: Warm published image
         continue-on-error: true
-        uses: nebius/soperator/.github/actions/warm-registry@4942952209b16f4cb840b94211b3fea3b78bc9f8
+        uses: nebius/soperator/.github/actions/warm-registry@b233c8317cf31d1a31939a28189eeba49c929a87
         with:
           images: ${{ steps.publish.outputs.image }}
