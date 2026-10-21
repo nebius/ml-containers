@@ -6,25 +6,25 @@ common_packages_list:
   - acl=2.3.2-1build1.1
   - autoconf=2.71-3
   - build-essential=12.10ubuntu1
-  - ca-certificates=20260601~24.04.1
+  - ca-certificates=20260816ubuntu0.24.04.1
   - flex=2.6.4-8.2build1
   - gnupg
   - jq=1.7.1-3ubuntu0.24.04.2
   - kmod=31+20240202-2ubuntu7.2
   - libdrm-dev=2.4.125-1ubuntu0.1~24.04.2
-  - libevent-dev=2.1.12-stable-9ubuntu2.1
+  - libevent-dev=2.1.12-stable-9ubuntu2.2
   - libjansson-dev=2.14-2build2
   - liblz4-dev=1.9.4-1build1.1
   - libpam0g-dev=1.5.3-5ubuntu5.7
   - libpam0g=1.5.3-5ubuntu5.7
-  - libssl-dev=3.0.13-0ubuntu3.15
-  - libssl3t64=3.0.13-0ubuntu3.15
+  - libssl-dev=3.0.13-0ubuntu3.16
+  - libssl3t64=3.0.13-0ubuntu3.16
   - libtool=2.4.7-7build1
   - numactl=2.0.18-1ubuntu0.24.04.1
   - pkg-config=1.8.1-2build1
   - python3-clustershell
   - software-properties-common=0.99.49.4
-  - sudo=1.9.15p5-3ubuntu5.24.04.3
+  - sudo=1.9.15p5-3ubuntu5.24.04.4
   - time=1.9-0.2build1
   - unzip=6.0-28ubuntu4.1
   - wget=1.21.4-1ubuntu4.5
