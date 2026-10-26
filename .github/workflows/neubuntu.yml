@@ -5,7 +5,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       daytime: ${{ steps.set_daytime.outputs.daytime }}
       image_repo: ${{ steps.set_image.outputs.image_repo }}
