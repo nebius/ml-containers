@@ -1,5 +1,6 @@
-# Snapshot at 2026-09-22 20:55
-URIs: https://mirror.eu.nebius.cloud/launchpad/quentiumyt/nvtop/snapshots/noble/20260922_205505
+# Snapshot at 2026-10-01 09:29
+Types: deb
+URIs: https://mirror.eu.nebius.cloud/launchpad/quentiumyt/nvtop/snapshots/noble/20261001_092952
 Components: main
 X-Repolib-Name: quentiumyt-ubuntu-nvtop-noble
 Signed-By:
@@ -33,4 +34,3 @@ Signed-By:
     =MVXj
     -----END PGP PUBLIC KEY BLOCK-----
 Suites: noble
-Types: deb
