@@ -40,14 +40,25 @@
   tags:
     - dcgmi
 
-- name: Fail if CUDA major version is not supported by dcgmi_cuda_packages_map
+- name: Fail if CUDA major version is not supported by dcgmi maps
   ansible.builtin.assert:
     that:
       - dcgmi_packages | length > 0
+      - dcgmi_pin_content[dcgmi_cuda_major_version] is defined
     fail_msg: >-
       Detected CUDA major version '{{ dcgmi_cuda_major_version | default('UNKNOWN') }}',
-      but dcgmi_cuda_packages_map has no entry for it. Please add one in
-      roles/dcgmi/defaults/main.yml.
+      but dcgmi_cuda_packages_map or dcgmi_pin_content has no entry for it.
+      Please add one in roles/dcgmi/defaults/main.yml.
+  tags:
+    - dcgmi
+
+- name: Pin DCGM components for CUDA {{ dcgmi_cuda_major_version }}
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/dcgmi-pins
+    content: "{{ dcgmi_pin_content[dcgmi_cuda_major_version] }}"
+    owner: root
+    group: root
+    mode: "0644"
   tags:
     - dcgmi
 
