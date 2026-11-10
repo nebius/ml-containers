@@ -1,6 +1,6 @@
 ---
 
-- name: Install DOCA OFED userspace
+- name: Install doca-ofed
   hosts:
     - localhost
     - all
