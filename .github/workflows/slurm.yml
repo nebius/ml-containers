@@ -23,8 +23,8 @@ jobs:
       matrix:
         slurm:
           - image_version: "25.11.8"
-          - image_version: "26.05.4-nebius-1"
-            apt_version: "26.05.4-nebius-1"
+          - image_version: "26.05.4-nebius-3"
+            apt_version: "26.05.4-nebius-3"
         arch: ["amd64", "arm64"]
         include:
           - arch: amd64
@@ -94,7 +94,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slurm_version: ["25.11.8", "26.05.4-nebius-1"]
+        slurm_version: ["25.11.8", "26.05.4-nebius-3"]
 
     env:
       DAYTIME: ${{ needs.prepare.outputs.daytime }}
