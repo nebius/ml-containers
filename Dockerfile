@@ -124,7 +124,7 @@ ARG SLURM_VERSION
 ENV SLURM_VERSION=$SLURM_VERSION
 ARG SLURM_APT_VERSION=""
 
-# Install doca-ofed (OpenMPI, UCX, and related configs)
+# Install DOCA OFED userspace; kernel drivers are provided by the host.
 COPY ansible/doca_ofed.yml /opt/ansible/doca_ofed.yml
 COPY ansible/roles/doca_ofed /opt/ansible/roles/doca_ofed
 RUN cd /opt/ansible && \
@@ -190,7 +190,7 @@ FROM cuda AS training
 # NCCL (without tests), rdma-core, ibverbs-utils, numactl, OpenMPI & UCX, Python
 ######
 
-# Install doca-ofed (OpenMPI, UCX, and related configs)
+# Install DOCA OFED userspace; kernel drivers are provided by the host.
 COPY ansible/doca_ofed.yml /opt/ansible/doca_ofed.yml
 COPY ansible/roles/doca_ofed /opt/ansible/roles/doca_ofed
 RUN cd /opt/ansible && \
