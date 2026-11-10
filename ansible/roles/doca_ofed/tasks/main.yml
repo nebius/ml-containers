@@ -9,6 +9,38 @@
     - doca_ofed
     - openmpi
 
+- name: Install headers for the target DOCA kernel
+  ansible.builtin.apt:
+    name: "linux-headers-{{ doca_ofed_kernel_version }}={{ doca_ofed_kernel_headers_version }}"
+    update_cache: true
+  tags:
+    - doca_ofed
+    - openmpi
+
+- name: Create DKMS configuration directory
+  ansible.builtin.file:
+    path: /etc/dkms
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  tags:
+    - doca_ofed
+    - openmpi
+
+# OFED otherwise uses uname -r for feature checks despite receiving target headers.
+- name: Pass the DKMS target kernel version to OFED configure
+  ansible.builtin.copy:
+    dest: "/etc/dkms/mlnx-ofed-kernel-{{ doca_ofed_kernel_module_version }}.conf"
+    content: |
+      PRE_BUILD='./configure --kernel-version=$kernelver --kernel-sources=$kernel_source_dir --default --build-dummy-mods --with-njobs=$parallel_jobs'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - doca_ofed
+    - openmpi
+
 - name: Ensure doca-ofed packages are installed
   ansible.builtin.apt:
     name:
