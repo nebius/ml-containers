@@ -8,11 +8,13 @@ set -e
 #   - cuda-drivers (old)
 #   - nvidia-open (new, >= 560)
 # Specific packages:
-#   - libnvidia-compute-*
+#   - libnvidia-compute (>= 590)
+#   - libnvidia-compute-* (legacy names)
 
 driver_packages=(
   cuda-drivers
   nvidia-open
+  libnvidia-compute
   libnvidia-compute-460
   libnvidia-compute-465
   libnvidia-compute-470
@@ -33,6 +35,8 @@ driver_packages=(
   libnvidia-compute-585
   libnvidia-compute-590
   libnvidia-compute-595
+  libnvidia-compute-610
+  libnvidia-compute-615
   libnvidia-compute-460-server
   libnvidia-compute-470-server
   libnvidia-compute-515-server
@@ -50,6 +54,7 @@ driver_packages=(
   libnvidia-compute-585-server
   libnvidia-compute-590-server
   libnvidia-compute-595-server
+  libnvidia-compute-615-server
 )
 
 # Install deb package mocking tool
