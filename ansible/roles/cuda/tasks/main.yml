@@ -113,6 +113,14 @@
   tags:
     - cuda
 
+- name: Install fake NVML package
+  ansible.builtin.apt:
+    name: libnvidia-ml1-fake
+    state: present
+    update_cache: true
+  tags:
+    - cuda
+
 - name: Install packages and related libraries for CUDA {{ cuda_version }}
   ansible.builtin.apt:
     name: "{{ cuda_packages[cuda_version] }}"
