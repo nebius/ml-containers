@@ -1,6 +1,6 @@
-# Snapshot at 2026-10-13 08:33
+# Snapshot at 2026-11-25 08:10
 Types: deb
-URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/resolute-updates/20261013_083308
+URIs: https://mirror.eu.nebius.cloud/ubuntu/snapshots/resolute-updates/20261125_081039
 Suites: resolute-updates
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg

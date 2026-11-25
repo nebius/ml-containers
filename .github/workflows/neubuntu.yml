@@ -29,22 +29,32 @@ jobs:
         release: [noble, resolute]
         arch: [amd64, arm64]
         include:
-          - arch: amd64
+          - release: noble
+            arch: amd64
             platform: linux/amd64
             runner: ubuntu-24.04
-          - arch: arm64
+          - release: noble
+            arch: arm64
             platform: linux/arm64
             runner: ubuntu-24.04-arm
+          - release: resolute
+            arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-26.04
+          - release: resolute
+            arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-26.04-arm
           # Ubuntu 24.04 LTS: Dockerfile defaults
           - release: noble
-            build_args: ""
+            build_args: >-
+              --build-arg UBUNTU_RELEASE=noble
+              --build-arg BASE_IMAGE=cr.nebius.cloud/soperator-proxy-docker-io/library/ubuntu:noble@sha256:562111b88caa79c71391c0c4d3c2114a7d5c35915c20561fd893cb1e07929e6b
           # Ubuntu 26.04 LTS
           - release: resolute
             build_args: >-
-              --build-arg BASE_IMAGE=ubuntu:26.04@sha256:f144425ff09be612d6d9ad965196e9cdc23dae1f42110a8a11a3e9a8198759f7
+              --build-arg BASE_IMAGE=cr.nebius.cloud/soperator-proxy-docker-io/library/ubuntu:resolute@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db
               --build-arg UBUNTU_RELEASE=resolute
-              --build-arg PYTHON_VERSION=3.14
-              --build-arg PYTHON_APT_VERSION=3.14.4-1ubuntu0.2
 
     env:
       IMAGE: ${{ needs.prepare.outputs.image_repo }}:${{ matrix.release }}-${{ needs.prepare.outputs.daytime }}
@@ -60,7 +70,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -sSL https://storage.eu-north1.nebius.cloud/cli/install.sh | bash
+          curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
           echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
 
       - name: Restore Nebius config
@@ -101,7 +111,7 @@ jobs:
     needs: [prepare, build_single_arch]
     # Publish each release whose images were built, even if the other release failed
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     strategy:
       fail-fast: false
@@ -119,7 +129,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -sSL https://storage.eu-north1.nebius.cloud/cli/install.sh | bash
+          curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
           echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
 
       - name: Restore Nebius config

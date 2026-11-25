@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -sSL https://storage.eu-north1.nebius.cloud/cli/install.sh | bash
+          curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
           echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
 
       - name: Restore Nebius config
@@ -108,7 +108,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -sSL https://storage.eu-north1.nebius.cloud/cli/install.sh | bash
+          curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
           echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
 
       - name: Restore Nebius config

@@ -53,7 +53,7 @@
 - name: Download Nebius public GPG key
   ansible.builtin.get_url:
     url: https://dr.nebius.cloud/public.gpg
-    dest: /usr/share/keyrings/nebius.gpg.pub
+    dest: /usr/share/keyrings/nebius.asc
     mode: "0644"
     checksum: "sha256:e4ec7915ef64976047b3a65db93cbfa94072a8179e77e29ea78f379d30bf4030"
   tags:
@@ -65,9 +65,9 @@
     dest: /etc/apt/sources.list.d/nebius.list
     content: |
       {% if ansible_facts['distribution_release'] in repos_nebius_release_suites %}
-      deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ {{ ansible_facts['distribution_release'] }} main
+      deb [signed-by=/usr/share/keyrings/nebius.asc] https://dr.nebius.cloud/ {{ ansible_facts['distribution_release'] }} main
       {% endif %}
-      deb [signed-by=/usr/share/keyrings/nebius.gpg.pub] https://dr.nebius.cloud/ stable main
+      deb [signed-by=/usr/share/keyrings/nebius.asc] https://dr.nebius.cloud/ stable main
     owner: root
     group: root
     mode: "0644"
