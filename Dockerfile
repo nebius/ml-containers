@@ -19,15 +19,10 @@ ARG UBUNTU_RELEASE
 ARG PYTHON_VERSION=3.15
 ARG PYTHON_APT_VERSION=3.15.2-1+${UBUNTU_RELEASE}1
 
-# Install reqirements for Nebius Ubuntu mirror
+# Bootstrap TLS only; other packages must come from the pinned Nebius snapshots.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      apt-transport-https \
-      ca-certificates  \
-      software-properties-common \
-      curl \
-      gnupg \
-      gnupg2 && \
+      ca-certificates && \
     install -m 0755 -d /etc/apt/keyrings && \
     rm -f /etc/apt/sources.list.d/ubuntu.sources && \
     apt-get clean && \
@@ -41,6 +36,11 @@ COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/deadsnakes.sources /etc/apt/sou
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
+      apt-transport-https \
+      software-properties-common \
+      curl \
+      gnupg \
+      gnupg2 \
       locales \
       tzdata \
       wget && \
