@@ -14,13 +14,22 @@ jobs:
         run: echo "daytime=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
 
   build_single_arch:
-    name: Build slurm=${{ matrix.slurm.image_version }} arch=${{ matrix.arch }}
+    name: Build slurm=${{ matrix.slurm.image_version }} ${{ matrix.ubuntu.release }} arch=${{ matrix.arch }}
     needs: prepare
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.arch == 'amd64' && matrix.ubuntu.runner_amd64 || matrix.ubuntu.runner_arm64 }}
 
     strategy:
       fail-fast: false
       matrix:
+        ubuntu:
+          # Preserve existing noble tags; use a distinct suffix for new releases.
+          - release: noble
+            tag_suffix: ""
+            runner_amd64: ubuntu-24.04
+            runner_arm64: ubuntu-24.04-arm
+            build_args: >-
+              --build-arg UBUNTU_RELEASE=noble
+              --build-arg BASE_IMAGE=cr.nebius.cloud/soperator-proxy-docker-io/library/ubuntu:noble@sha256:562111b88caa79c71391c0c4d3c2114a7d5c35915c20561fd893cb1e07929e6b
         slurm:
           - image_version: "25.11.8"
           - image_version: "26.05.6-nebius-1"
@@ -29,10 +38,8 @@ jobs:
         include:
           - arch: amd64
             platform: linux/amd64
-            runner: ubuntu-24.04
           - arch: arm64
             platform: linux/arm64
-            runner: ubuntu-24.04-arm
 
     env:
       DAYTIME: ${{ needs.prepare.outputs.daytime }}
@@ -68,14 +75,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          IMAGE="${IMAGE_BASE}:${{ matrix.slurm.image_version }}-${DAYTIME}"
+          IMAGE="${IMAGE_BASE}:${{ matrix.slurm.image_version }}${{ matrix.ubuntu.tag_suffix }}-${DAYTIME}"
           ARCH_TAG="${IMAGE}-${{ matrix.arch }}"
-          CACHE_REF="${IMAGE_BASE}:${{ matrix.slurm.image_version }}-${{ matrix.arch }}"
+          CACHE_REF="${IMAGE_BASE}:${{ matrix.slurm.image_version }}${{ matrix.ubuntu.tag_suffix }}-${{ matrix.arch }}"
 
           echo "Pushing: ${ARCH_TAG} (${{matrix.platform}}) with cache ${CACHE_REF}"
 
           docker buildx build \
             --platform "${{ matrix.platform }}" \
+            ${{ matrix.ubuntu.build_args }} \
             --build-arg SLURM_VERSION="${{ matrix.slurm.image_version }}" \
             --build-arg SLURM_APT_VERSION="${{ matrix.slurm.apt_version }}" \
             -t "${ARCH_TAG}" \
@@ -87,7 +95,7 @@ jobs:
             .
 
   create_manifest:
-    name: Create manifest slurm=${{ matrix.slurm_version }}
+    name: Create manifest slurm=${{ matrix.slurm_version }} ${{ matrix.ubuntu.release }}
     needs: [prepare, build_single_arch]
     runs-on: ubuntu-24.04
 
@@ -95,6 +103,9 @@ jobs:
       fail-fast: false
       matrix:
         slurm_version: ["25.11.8", "26.05.6-nebius-1"]
+        ubuntu:
+          - release: noble
+            tag_suffix: ""
 
     env:
       DAYTIME: ${{ needs.prepare.outputs.daytime }}
@@ -128,7 +139,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          IMAGE="${IMAGE_BASE}:${{ matrix.slurm_version }}-${DAYTIME}"
+          IMAGE="${IMAGE_BASE}:${{ matrix.slurm_version }}${{ matrix.ubuntu.tag_suffix }}-${DAYTIME}"
           AMD="${IMAGE}-amd64"
           ARM="${IMAGE}-arm64"
 
