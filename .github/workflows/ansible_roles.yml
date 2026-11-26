@@ -5,7 +5,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       daytime: ${{ steps.set_daytime.outputs.daytime }}
     steps:
@@ -28,6 +28,12 @@ jobs:
             build_args: >-
               --build-arg UBUNTU_RELEASE=noble
               --build-arg BASE_IMAGE=cr.nebius.cloud/soperator-proxy-docker-io/library/ubuntu:noble@sha256:562111b88caa79c71391c0c4d3c2114a7d5c35915c20561fd893cb1e07929e6b
+          - release: resolute
+            runner_amd64: ubuntu-26.04
+            runner_arm64: ubuntu-26.04-arm
+            build_args: >-
+              --build-arg UBUNTU_RELEASE=resolute
+              --build-arg BASE_IMAGE=cr.nebius.cloud/soperator-proxy-docker-io/library/ubuntu:resolute@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db
         arch: [amd64, arm64]
         include:
           - arch: amd64
@@ -89,13 +95,14 @@ jobs:
   create_manifest:
     name: Create & push ${{ matrix.ubuntu.release }} multi-arch manifest
     needs: [prepare, build_single_arch]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     strategy:
       fail-fast: false
       matrix:
         ubuntu:
           - release: noble
+          - release: resolute
 
     env:
       IMAGE: cr.nebius.cloud/ml-containers/ansible_roles:${{ matrix.ubuntu.release }}-${{ needs.prepare.outputs.daytime }}
