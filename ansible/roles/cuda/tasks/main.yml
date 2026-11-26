@@ -31,12 +31,6 @@
     - locale
     - cuda
 
-- name: Ensure libnss3 packages are installed
-  ansible.builtin.apt:
-    name:
-      - libnss3=2:3.98-1ubuntu0.3
-    update_cache: true
-
 - name: Assert cuda_version is supported ({{ cuda_version }})
   ansible.builtin.assert:
     that:
@@ -44,11 +38,18 @@
       - cuda_packages[cuda_version] is defined
       - cuda_hold_packages[cuda_version] is defined
       - cuda_pin_content[cuda_version] is defined
+      - ansible_facts['distribution_release'] in cuda_supported_releases.get(cuda_version, [])
     fail_msg: >-
-      Unsupported or missing cuda_version '{{ cuda_version }}'.
-      Available: {{ cuda_packages.keys() | list | join(', ') }}
+      CUDA {{ cuda_version | default('undefined') }} is not supported on
+      Ubuntu {{ ansible_facts['distribution_release'] }}.
+      Supported combinations: {{ cuda_supported_releases }}
   tags:
     - cuda
+
+- name: Ensure libnss3 packages are installed
+  ansible.builtin.apt:
+    name: "{{ cuda_libnss3_package_map[ansible_facts['distribution_release']] }}"
+    update_cache: true
 
 - name: Create APT pin file for CUDA {{ cuda_version }}
   ansible.builtin.copy:

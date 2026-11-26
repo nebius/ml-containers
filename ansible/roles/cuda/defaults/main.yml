@@ -1,5 +1,15 @@
 ---
 
+cuda_libnss3_package_map:
+  noble: "libnss3=2:3.98-1ubuntu0.3"
+  resolute: "libnss3=2:3.120-1ubuntu2.2"
+
+cuda_supported_releases:
+  "12.9.0": [noble]
+  "13.0.2": [noble]
+  "13.0.3": [noble]
+  "13.5.0": [resolute]
+
 cuda_packages:
   "12.9.0":
     - "cuda=12.9.0-1"
@@ -25,6 +35,14 @@ cuda_packages:
     - "libcudnn9-headers-cuda-13=9.15.0.58-1"
     - "libnccl-dev=2.31.2-1+cuda13.0"
     - "libnccl2=2.31.2-1+cuda13.0"
+  "13.5.0":
+    - "cuda=13.5.0-1"
+    - "libcublas-dev-13-5=13.10.0.20-1"
+    - "libcudnn9-cuda-13=9.28.1.4-1"
+    - "libcudnn9-dev-cuda-13=9.28.1.4-1"
+    - "libcudnn9-headers-cuda-13=9.28.1.4-1"
+    - "libnccl-dev=2.32.6-1+cuda13.5"
+    - "libnccl2=2.32.6-1+cuda13.5"
 
 cuda_hold_packages:
   "12.9.0":
@@ -51,6 +69,14 @@ cuda_hold_packages:
     - libcudnn9-headers-cuda-13
     - libnccl-dev
     - libnccl2
+  "13.5.0":
+    - cuda
+    - libcublas-dev-13-5
+    - libcudnn9-cuda-13
+    - libcudnn9-dev-cuda-13
+    - libcudnn9-headers-cuda-13
+    - libnccl-dev
+    - libnccl2
 
 cuda_force_remove_extra_packages:
   - libnccl-profiler-inspector
@@ -63,6 +89,10 @@ cuda_pin_content:
 
     Package: nvidia-open
     Pin: version 99999999-fake
+    Pin-Priority: 1001
+
+    Package: libnvidia-ml1-fake
+    Pin: version 9999.9999.9999
     Pin-Priority: 1001
 
     Package: cuda
@@ -102,6 +132,10 @@ cuda_pin_content:
     Pin: version 99999999-fake
     Pin-Priority: 1001
 
+    Package: libnvidia-ml1-fake
+    Pin: version 9999.9999.9999
+    Pin-Priority: 1001
+
     Package: cuda
     Pin: version 13.0.2-1
     Pin-Priority: 1001
@@ -139,6 +173,10 @@ cuda_pin_content:
     Pin: version 99999999-fake
     Pin-Priority: 1001
 
+    Package: libnvidia-ml1-fake
+    Pin: version 9999.9999.9999
+    Pin-Priority: 1001
+
     Package: cuda
     Pin: version 13.0.3-1
     Pin-Priority: 1001
@@ -165,6 +203,47 @@ cuda_pin_content:
 
     Package: libnccl2
     Pin: version 2.31.2-1+cuda13.0
+    Pin-Priority: 1001
+
+  "13.5.0": |
+    Package: cuda-drivers
+    Pin: version 99999999-fake
+    Pin-Priority: 1001
+
+    Package: nvidia-open
+    Pin: version 99999999-fake
+    Pin-Priority: 1001
+
+    Package: libnvidia-ml1-fake
+    Pin: version 9999.9999.9999
+    Pin-Priority: 1001
+
+    Package: cuda
+    Pin: version 13.5.0-1
+    Pin-Priority: 1001
+
+    Package: libcublas-dev-13-5
+    Pin: version 13.10.0.20-1
+    Pin-Priority: 1001
+
+    Package: libcudnn9-cuda-13
+    Pin: version 9.28.1.4-1
+    Pin-Priority: 1001
+
+    Package: libcudnn9-dev-cuda-13
+    Pin: version 9.28.1.4-1
+    Pin-Priority: 1001
+
+    Package: libcudnn9-headers-cuda-13
+    Pin: version 9.28.1.4-1
+    Pin-Priority: 1001
+
+    Package: libnccl-dev
+    Pin: version 2.32.6-1+cuda13.5
+    Pin-Priority: 1001
+
+    Package: libnccl2
+    Pin: version 2.32.6-1+cuda13.5
     Pin-Priority: 1001
 
 cuda_dpkg_arch_map:
