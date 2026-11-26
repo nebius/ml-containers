@@ -2,47 +2,93 @@
 
 common_packages_force_reinstall: false
 
-common_packages_list:
-  - acl=2.3.2-1build1.1
-  - autoconf=2.71-3
-  - build-essential=12.10ubuntu1
-  - ca-certificates=20260816ubuntu0.24.04.2
-  - flex=2.6.4-8.2build1
-  - gnupg
-  - jq=1.7.1-3ubuntu0.24.04.2
-  - kmod=31+20240202-2ubuntu7.2
-  - libdrm-dev=2.4.125-1ubuntu0.1~24.04.2
-  - libevent-dev=2.1.12-stable-9ubuntu2.2
-  - libjansson-dev=2.14-2build2
-  - liblz4-dev=1.9.4-1build1.1
-  - libpam0g-dev=1.5.3-5ubuntu5.7
-  - libpam0g=1.5.3-5ubuntu5.7
-  - libssl-dev=3.0.13-0ubuntu3.16
-  - libssl3t64=3.0.13-0ubuntu3.16
-  - libtool=2.4.7-7build1
-  - numactl=2.0.18-1ubuntu0.24.04.1
-  - pkg-config=1.8.1-2build1
-  - python3-clustershell
-  - software-properties-common=0.99.49.4
-  - sudo=1.9.15p5-3ubuntu5.24.04.4
-  - time=1.9-0.2build1
-  - unzip=6.0-28ubuntu4.1
-  - wget=1.21.4-1ubuntu4.5
-  - zip=3.0-13ubuntu0.2
+common_packages_map:
+  noble:
+    - acl=2.3.2-1build1.1
+    - autoconf=2.71-3
+    - build-essential=12.10ubuntu1
+    - ca-certificates=20260816ubuntu0.24.04.2
+    - flex=2.6.4-8.2build1
+    - gnupg
+    - jq=1.7.1-3ubuntu0.24.04.2
+    - kmod=31+20240202-2ubuntu7.2
+    - libdrm-dev=2.4.125-1ubuntu0.1~24.04.2
+    - libevent-dev=2.1.12-stable-9ubuntu2.2
+    - libjansson-dev=2.14-2build2
+    - liblz4-dev=1.9.4-1build1.1
+    - libpam0g-dev=1.5.3-5ubuntu5.7
+    - libpam0g=1.5.3-5ubuntu5.7
+    - libssl-dev=3.0.13-0ubuntu3.16
+    - libssl3t64=3.0.13-0ubuntu3.16
+    - libtool=2.4.7-7build1
+    - numactl=2.0.18-1ubuntu0.24.04.1
+    - pkg-config=1.8.1-2build1
+    - python3-clustershell
+    - software-properties-common=0.99.49.4
+    - sudo=1.9.15p5-3ubuntu5.24.04.4
+    - time=1.9-0.2build1
+    - unzip=6.0-28ubuntu4.1
+    - wget=1.21.4-1ubuntu4.5
+    - zip=3.0-13ubuntu0.2
 
-  # required for Slurm
-  - daemontools=1:0.76-10
-  - iproute2=6.1.0-1ubuntu6.4
-  - libhwloc-dev=2.10.0-1build1
-  - libjson-c-dev=0.17-1build1
-  - libmunge-dev=0.5.15-4ubuntu0.1
-  - libncurses-dev=6.4+20240113-1ubuntu2.2
-  - libpmix2t64=5.0.1-4.1build1
+    # required for Slurm
+    - daemontools=1:0.76-10
+    - iproute2=6.1.0-1ubuntu6.4
+    - libhwloc-dev=2.10.0-1build1
+    - libjson-c-dev=0.17-1build1
+    - libmunge-dev=0.5.15-4ubuntu0.1
+    - libncurses-dev=6.4+20240113-1ubuntu2.2
+    - libpmix2t64=5.0.1-4.1build1
 
-  # required for enroot operation
-  - parallel=20240222+ds-2
-  - pigz=2.8-1
-  - squashfs-tools=1:4.6.1-1build1
-  - zstd=1.5.5+dfsg2-2build1.1
+    # required for enroot operation
+    - parallel=20240222+ds-2
+    - pigz=2.8-1
+    - squashfs-tools=1:4.6.1-1build1
+    - zstd=1.5.5+dfsg2-2build1.1
+
+  resolute:
+    - acl=2.3.2-2
+    - autoconf=2.72-3.1ubuntu2
+    - build-essential=12.12ubuntu2.26.04.2
+    - ca-certificates=20260816ubuntu0.26.04.2
+    - flex=2.6.4-8.2build2
+    - gnupg
+    - jq=1.8.1-4ubuntu2
+    - kmod=34.2-2ubuntu2
+    - libdrm-dev=2.4.131-1
+    - libevent-dev=2.1.12-stable-10ubuntu0.2
+    - libjansson-dev=2.14-2build4
+    - liblz4-dev=1.10.0-8
+    - libpam0g-dev=1.7.0-5ubuntu3.2
+    - libpam0g=1.7.0-5ubuntu3.2
+    - libssl-dev=3.5.5-1ubuntu3.7
+    - libssl3t64=3.5.5-1ubuntu3.7
+    - libtool=2.5.4-9
+    - numactl=2.0.19-1build1
+    - pkg-config=2.5.1-4
+    - python3-clustershell
+    - software-properties-common=0.120.2
+    - sudo=1.9.17p2-1ubuntu3.2
+    - time=1.9-0.4
+    - unzip=6.0-29ubuntu1
+    - wget=1.25.0-2ubuntu4.4
+    - zip=3.0-15ubuntu3
+
+    # required for Slurm
+    - daemontools=1:0.76-15build1
+    - iproute2=6.19.0-1ubuntu1.1
+    - libhwloc-dev=2.13.0-2
+    - libjson-c-dev=0.18+ds-3
+    - libmunge-dev=0.5.16-1.1
+    - libncurses-dev=6.6+20251231-1
+    - libpmix2t64=6.0.0+really5.0.9-3build1
+
+    # required for enroot operation
+    - parallel=20240222+ds-3
+    - pigz=2.8-1build1
+    - squashfs-tools=1:4.7.5-1
+    - zstd=1.5.7+dfsg-3
+
+common_packages_list: "{{ common_packages_map[ansible_facts['distribution_release']] }}"
 
 common_packages_absent: []
