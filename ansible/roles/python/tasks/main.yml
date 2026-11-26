@@ -62,12 +62,9 @@
 - name: Create symlink for python
   ansible.builtin.file:
     src: "/usr/bin/python{{ python_version }}"
-    dest: "{{ item }}"
+    dest: /usr/bin/python
     mode: "0755"
     force: true
     owner: root
     group: root
     state: link
-  loop:
-    - /usr/bin/python
-    - /usr/bin/python3

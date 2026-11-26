@@ -1,7 +1,4 @@
-# Ubuntu 24.04 (noble) by default. For 26.04 (resolute) pass:
-#   --build-arg BASE_IMAGE=ubuntu:26.04@sha256:f144425ff09be612d6d9ad965196e9cdc23dae1f42110a8a11a3e9a8198759f7 \
-#   --build-arg UBUNTU_RELEASE=resolute --build-arg PYTHON_VERSION=3.14 --build-arg PYTHON_APT_VERSION=3.14.4-1ubuntu0.2
-ARG BASE_IMAGE=cr.nebius.cloud/ml-containers/ubuntu@sha256:8a48136281fe35ee40426bf9933cfff1b2fa9bdfbb82cb7a77a62a2544aa072f
+ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE} AS neubuntu
 
@@ -9,7 +6,7 @@ FROM ${BASE_IMAGE} AS neubuntu
 # Base Ubuntu image (Neubuntu as Nebius + Ubuntu) with modified repositories. It uses Nebius mirrors of the public Ubuntu
 # repositories to address network accessibility issues, and it also resolves the snapshot problem for
 # ARM packages (at the time of writing, Ubuntu does not support snapshots). The image additionally includes
-# public repositories for Docker, NVIDIA CUDA, nvtop, and OFED.
+# public repositories for Docker, NVIDIA CUDA, nvtop, python and OFED.
 ######
 
 LABEL org.opencontainers.image.authors="Pavel Sofronii pavel.sofrony@nebius.com"
@@ -18,30 +15,32 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 ENV LANG=en_US.UTF-8
 
-ARG UBUNTU_RELEASE=noble
-ARG PYTHON_VERSION=3.12
-ARG PYTHON_APT_VERSION=3.12.3-1ubuntu0.17
+ARG UBUNTU_RELEASE
+ARG PYTHON_VERSION=3.15
+ARG PYTHON_APT_VERSION=3.15.2-1+${UBUNTU_RELEASE}1
 
-# Install reqirements for Nebius Ubuntu mirror
+# Bootstrap TLS only; other packages must come from the pinned Nebius snapshots.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      apt-transport-https \
-      ca-certificates  \
-      curl \
-      gnupg \
-      gnupg2 && \
+      ca-certificates && \
     install -m 0755 -d /etc/apt/keyrings && \
     rm -f /etc/apt/sources.list.d/ubuntu.sources && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Add Nebius Ubuntu mirrors
+# Add Nebius mirrors
 COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/nebius-ubuntu.sources /etc/apt/sources.list.d/nebius-ubuntu.sources
 COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/nebius-ubuntu-security.sources /etc/apt/sources.list.d/nebius-ubuntu-security.sources
 COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/nebius-ubuntu-updates.sources /etc/apt/sources.list.d/nebius-ubuntu-updates.sources
+COPY ansible/roles/repos/files/${UBUNTU_RELEASE}/deadsnakes.sources /etc/apt/sources.list.d/deadsnakes.sources
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
+      apt-transport-https \
+      software-properties-common \
+      curl \
+      gnupg \
+      gnupg2 \
       locales \
       tzdata \
       wget && \
@@ -66,7 +65,7 @@ COPY ansible/requirements.txt /opt/ansible/requirements.txt
 COPY ansible/inventory/ /opt/ansible/inventory/
 RUN cd /opt/ansible && "/usr/bin/python${PYTHON_VERSION}" -m venv .venv && \
     .venv/bin/python -m pip install \
-      "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70" && \
+      "pip @ https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13" && \
     .venv/bin/python -m pip install -r requirements.txt
 
 ENV PATH="/opt/ansible/.venv/bin:${PATH}"

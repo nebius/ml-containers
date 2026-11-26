@@ -29,12 +29,15 @@ repos_ubuntu_sources_map:
     - nebius-ubuntu-updates.sources
     - nebius-ubuntu.sources
     - quentiumyt-ubuntu-nvtop-noble.sources
+    - deadsnakes.sources
   resolute:
     - nebius-ubuntu-security.sources
     - nebius-ubuntu-updates.sources
     - nebius-ubuntu.sources
+    - quentiumyt-ubuntu-nvtop-resolute.sources
+    - deadsnakes.sources
 
-# Releases published at dr.nebius.cloud as a dedicated suite
+# dr.nebius.cloud publishes a release-specific suite for these Ubuntu releases.
 repos_nebius_release_suites:
   - noble
 
