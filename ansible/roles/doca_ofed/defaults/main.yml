@@ -1,8 +1,25 @@
 ---
 
-doca_ofed_version: 3.3.0-088000
-doca_ofed_openmpi_version_short: 4.1.9a1
-doca_ofed_perftest_version: 2.5.9
+doca_ofed_version_map:
+  noble: 3.3.0-088000
+  resolute: 3.6.0-070000
+
+doca_ofed_perftest_version_map:
+  noble: 2.5.9
+  resolute: 3.3.3-1
+
+doca_ofed_mft_version_map:
+  noble: 4.35.0-159
+  resolute: 4.38.0-134
+
+doca_ofed_openmpi_version_map:
+  noble: 4.1.9a1
+  resolute: 5.0.11rc1.2611010811
+
+doca_ofed_version: "{{ doca_ofed_version_map[ansible_facts['distribution_release']] }}"
+doca_ofed_perftest_version: "{{ doca_ofed_perftest_version_map[ansible_facts['distribution_release']] }}"
+doca_ofed_mft_version: "{{ doca_ofed_mft_version_map[ansible_facts['distribution_release']] }}"
+doca_ofed_openmpi_version_short: "{{ doca_ofed_openmpi_version_map[ansible_facts['distribution_release']] }}"
 doca_ofed_supported_architectures:
   - x86_64
   - aarch64

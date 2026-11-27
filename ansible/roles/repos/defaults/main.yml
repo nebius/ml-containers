@@ -15,12 +15,20 @@ repos_mellanox_arch_map:
   arm64: arm64-sbsa
   aarch64: arm64-sbsa
 
-# Keyed by Ubuntu release codename. Releases without an entry get no DOCA repo
-# (no pinned DOCA snapshot exists for resolute yet).
+repos_mellanox_deb_arch_map:
+  amd64: amd64
+  x86_64: amd64
+  arm64: arm64
+  aarch64: arm64
+
+# Keyed by Ubuntu release codename. Releases without an entry get no DOCA repo.
 repos_mellanox_repo_uri_map:
   noble:
     amd64: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/amd64/20260218_061534/"
     arm64-sbsa: "https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/{{ repos_mellanox_doca_version }}/noble/arm64-sbsa/20260218_061536/"
+  resolute:
+    amd64: https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/latest/resolute/amd64/20261103_202336
+    arm64-sbsa: https://mirror.eu.nebius.cloud/nvidia/doca/snapshots/latest/resolute/arm64-sbsa/20261103_201906
 
 # Per-release repository source files from files/<release>/
 repos_ubuntu_sources_map:

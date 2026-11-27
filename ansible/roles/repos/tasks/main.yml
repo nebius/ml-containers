@@ -118,7 +118,7 @@
     types: deb
     uris: "{{ repos_mellanox_repo_uri_map[ansible_facts['distribution_release']][_mellanox_arch] }}"
     suites: "{{ repos_mellanox_repo_suites }}"
-    architectures: "{{ _mellanox_arch }}"
+    architectures: "{{ repos_mellanox_deb_arch_map[ansible_facts['architecture']] }}"
     signed_by: "{{ repos_mellanox_repo_signed_by }}"
   when: ansible_facts['distribution_release'] in repos_mellanox_repo_uri_map
   tags:
