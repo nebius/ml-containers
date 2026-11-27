@@ -64,9 +64,7 @@
   ansible.builtin.copy:
     dest: /etc/apt/sources.list.d/nebius.list
     content: |
-      {% if ansible_facts['distribution_release'] in repos_nebius_release_suites %}
       deb [signed-by=/usr/share/keyrings/nebius.asc] https://dr.nebius.cloud/ {{ ansible_facts['distribution_release'] }} main
-      {% endif %}
       deb [signed-by=/usr/share/keyrings/nebius.asc] https://dr.nebius.cloud/ stable main
     owner: root
     group: root
